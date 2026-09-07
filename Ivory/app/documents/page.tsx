@@ -3,30 +3,19 @@ import GlobalShell from "@/components/GlobalShell";
 import DocumentRow from "@/components/DocumentRow";
 import UploadDocumentForm from "@/components/UploadDocumentForm";
 import Link from "next/link";
+import { getMyProjects } from "@/lib/getMyProjects";
 
 export const dynamic = "force-dynamic";
 
 export default async function GlobalDocumentsPage() {
   const supabase = createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: documents } = await supabase
+    .from("documents")
+    .select("*, projects(id, name), profiles(full_name)")
+    .order("created_at", { ascending: false });
 
-  const [{ data: documents }, { data: memberships }] = await Promise.all([
-    supabase
-      .from("documents")
-      .select("*, projects(id, name), profiles(full_name)")
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("project_members")
-      .select("projects(id, name)")
-      .eq("user_id", user?.id ?? ""),
-  ]);
-
-  const projects = (memberships ?? [])
-    .map((m: any) => m.projects)
-    .filter(Boolean);
+  const projects = await getMyProjects();
 
   const docsWithUrls = await Promise.all(
     (documents ?? []).map(async (d: any) => {

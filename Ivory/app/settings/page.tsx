@@ -3,6 +3,7 @@ import GlobalShell from "@/components/GlobalShell";
 import ToggleApprovedButton from "@/components/ToggleApprovedButton";
 import AssignUserToProjectForm from "@/components/AssignUserToProjectForm";
 import DeleteButton from "@/components/DeleteButton";
+import GlobalRoleSelect from "@/components/GlobalRoleSelect";
 
 export const dynamic = "force-dynamic";
 
@@ -24,21 +25,18 @@ export default async function GlobalSettingsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: profiles }, { data: allMemberships }, { data: myProjects }] =
+  const [{ data: profiles }, { data: allMemberships }, { data: allProjects }, { data: viewerProfile }] =
     await Promise.all([
       supabase.from("profiles").select("*").order("full_name"),
       supabase
         .from("project_members")
         .select("id, user_id, project_id, access_level, allowed_sections, role, projects(id, name)"),
-      supabase
-        .from("project_members")
-        .select("projects(id, name)")
-        .eq("user_id", user?.id ?? ""),
+      supabase.from("projects").select("id, name").order("name"),
+      supabase.from("profiles").select("global_role").eq("id", user?.id ?? "").single(),
     ]);
 
-  const projectOptions = (myProjects ?? [])
-    .map((m: any) => m.projects)
-    .filter(Boolean);
+  const projectOptions = allProjects ?? [];
+  const isMaster = viewerProfile?.global_role === "master";
 
   const membershipsByUser = new Map<string, any[]>();
   for (const m of allMemberships ?? []) {
@@ -86,8 +84,23 @@ export default async function GlobalSettingsPage() {
                       </p>
                       <p className="text-xs text-ink/40">{p.role}</p>
                     </div>
-                    <ToggleApprovedButton userId={p.id} approved={p.approved} />
+                    <div className="flex items-center gap-2">
+                      <GlobalRoleSelect
+                        userId={p.id}
+                        currentRole={p.global_role}
+                        disabled={!isMaster}
+                      />
+                      <ToggleApprovedButton userId={p.id} approved={p.approved} />
+                    </div>
                   </div>
+
+                  {p.global_role === "master" || p.global_role === "main" ? (
+                    <p className="mt-2 text-xs text-ink/50">
+                      {p.global_role === "master" ? "Master" : "Main user"} —
+                      heeft toegang tot alle projecten en onderdelen, ongeacht
+                      onderstaande koppelingen.
+                    </p>
+                  ) : null}
 
                   <div className="mt-2 space-y-1.5">
                     {memberships.map((m) => (

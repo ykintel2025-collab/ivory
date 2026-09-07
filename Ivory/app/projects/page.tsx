@@ -7,6 +7,7 @@ import QuickAddTaskForm from "@/components/QuickAddTaskForm";
 import UploadDocumentForm from "@/components/UploadDocumentForm";
 import DocumentRow from "@/components/DocumentRow";
 import QuickDeleteProjectButton from "@/components/QuickDeleteProjectButton";
+import { getMyProjects } from "@/lib/getMyProjects";
 
 export const dynamic = "force-dynamic";
 
@@ -74,9 +75,7 @@ export default async function ProjectsPage() {
     })
   );
 
-  const projects = (memberships ?? [])
-    .map((m: any) => m.projects)
-    .filter(Boolean);
+  const projects = await getMyProjects();
 
   const projectIds = projects.map((p: any) => p.id);
   const [{ data: allRisksForCards }, { data: allTasksForCards }] = await Promise.all([

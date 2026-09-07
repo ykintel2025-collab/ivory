@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AppShell from "@/components/AppShell";
+import { getMyProjects } from "@/lib/getMyProjects";
 
 export default async function ProjectLayout({
   children,
@@ -17,7 +18,7 @@ export default async function ProjectLayout({
 
   if (!user) redirect("/login");
 
-  const [{ data: project }, { data: membership }, { data: memberships }] =
+  const [{ data: project }, { data: membership }, projectOptions] =
     await Promise.all([
       supabase
         .from("projects")
@@ -30,24 +31,17 @@ export default async function ProjectLayout({
         .eq("project_id", params.projectId)
         .eq("user_id", user.id)
         .single(),
-      supabase
-        .from("project_members")
-        .select("projects(id, name)")
-        .eq("user_id", user.id),
+      getMyProjects(),
     ]);
 
-  // RLS zorgt dat dit leeg blijft als de gebruiker geen lid is van dit project
+  // RLS zorgt dat dit leeg blijft als de gebruiker geen lid is (of master/main is)
   if (!project) redirect("/projects");
-
-  const projectOptions = (memberships ?? [])
-    .map((m: any) => m.projects)
-    .filter(Boolean);
 
   return (
     <AppShell
       projectId={params.projectId}
       projectName={project.name}
-      projects={projectOptions}
+      projects={projectOptions as any}
       accessLevel={membership?.access_level ?? "volledig"}
       allowedSections={membership?.allowed_sections ?? []}
     >
