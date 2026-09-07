@@ -12,6 +12,7 @@ const NAV = [
   { href: "/projects", label: "Dashboard", icon: "◇" },
   { href: "/documents", label: "Documenten", icon: "▦" },
   { href: "/contacts", label: "Relaties", icon: "◎" },
+  { href: "/settings", label: "Instellingen", icon: "⚙" },
 ];
 
 export default function GlobalShell({
