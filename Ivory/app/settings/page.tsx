@@ -4,6 +4,7 @@ import ToggleApprovedButton from "@/components/ToggleApprovedButton";
 import AssignUserToProjectForm from "@/components/AssignUserToProjectForm";
 import DeleteButton from "@/components/DeleteButton";
 import GlobalRoleSelect from "@/components/GlobalRoleSelect";
+import CreateUserForm from "@/components/CreateUserForm";
 
 export const dynamic = "force-dynamic";
 
@@ -56,12 +57,16 @@ export default async function GlobalSettingsPage() {
         </div>
 
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-          <h2 className="mb-1 font-display text-lg text-ink">Gebruikers</h2>
-          <p className="mb-4 text-xs text-ink/40">
-            "Geblokkeerd" ontneemt iemand toegang tot alles, ongeacht bij
-            hoeveel projecten diegene staat. Nieuwe gebruikers maak je aan
-            via Supabase → Authentication → Users.
-          </p>
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="font-display text-lg text-ink">Gebruikers</h2>
+              <p className="text-xs text-ink/40">
+                Geblokkeerd ontneemt iemand toegang tot alles, ongeacht bij
+                hoeveel projecten diegene staat.
+              </p>
+            </div>
+            {isMaster && <CreateUserForm />}
+          </div>
           <div className="space-y-3">
             {(profiles ?? []).map((p: any) => {
               const memberships = membershipsByUser.get(p.id) ?? [];

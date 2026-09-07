@@ -23,17 +23,26 @@ export default function ToggleApprovedButton({
   }
 
   return (
-    <button
-      onClick={handleToggle}
-      disabled={busy}
-      className={`rounded-full px-3 py-1 text-xs font-medium transition disabled:opacity-50 ${
-        approved
-          ? "bg-teal-soft text-teal hover:bg-brick-soft hover:text-brick"
-          : "bg-brick-soft text-brick hover:bg-teal-soft hover:text-teal"
-      }`}
-      title={approved ? "Klik om te blokkeren" : "Klik om te activeren"}
-    >
-      {approved ? "Actief" : "Geblokkeerd"}
-    </button>
+    <div className="flex items-center gap-2">
+      <span className={`text-xs font-medium ${approved ? "text-teal" : "text-brick"}`}>
+        {approved ? "Actief" : "Geblokkeerd"}
+      </span>
+      <button
+        role="switch"
+        aria-checked={approved}
+        onClick={handleToggle}
+        disabled={busy}
+        title={approved ? "Klik om te blokkeren" : "Klik om te activeren"}
+        className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50 ${
+          approved ? "bg-teal" : "bg-ink/20"
+        }`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition ${
+            approved ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
+      </button>
+    </div>
   );
 }
