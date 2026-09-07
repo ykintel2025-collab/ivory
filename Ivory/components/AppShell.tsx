@@ -105,6 +105,12 @@ export default function AppShell({
         >
           ← Alle projecten / Relaties
         </Link>
+        <Link
+          href="/account/security"
+          className="mb-1 rounded-lg px-3 py-2 text-left text-xs font-medium text-ivory/50 hover:bg-ink-soft hover:text-ivory"
+        >
+          Beveiliging
+        </Link>
         <button
           onClick={handleLogout}
           className="rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
@@ -157,6 +163,13 @@ export default function AppShell({
                 </Link>
               );
             })}
+            <Link
+              href="/account/security"
+              onClick={() => setMobileOpen(false)}
+              className="block rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
+            >
+              Beveiliging
+            </Link>
             <button
               onClick={handleLogout}
               className="mt-2 w-full rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
