@@ -10,13 +10,27 @@ export const dynamic = "force-dynamic";
 export default async function ContactsPage() {
   const supabase = createClient();
 
-  const { data: contacts } = await supabase
-    .from("contacts")
-    .select("*, project_contacts(project_id, role, projects(id, name))")
-    .order("name");
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const [{ data: contacts }, { data: memberships }] = await Promise.all([
+    supabase
+      .from("contacts")
+      .select("*, project_contacts(project_id, role, projects(id, name))")
+      .order("name"),
+    supabase
+      .from("project_members")
+      .select("projects(id, name)")
+      .eq("user_id", user?.id ?? ""),
+  ]);
+
+  const projects = (memberships ?? [])
+    .map((m: any) => m.projects)
+    .filter(Boolean);
 
   return (
-    <GlobalShell>
+    <GlobalShell projects={projects}>
       <div className="space-y-6">
         <div>
           <h1 className="font-display text-3xl text-ink">

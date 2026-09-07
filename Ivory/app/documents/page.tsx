@@ -49,7 +49,7 @@ export default async function GlobalDocumentsPage() {
   }
 
   return (
-    <GlobalShell>
+    <GlobalShell projects={projects}>
       <div className="space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>

@@ -44,16 +44,28 @@ export default function KanbanBoard({
   const supabase = createClient();
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
+  const [moveError, setMoveError] = useState<string | null>(null);
 
   async function moveTask(id: string, status: Task["status"]) {
     setUpdating(id);
-    await supabase.from("tasks").update({ status }).eq("id", id);
+    setMoveError(null);
+    const { error } = await supabase.from("tasks").update({ status }).eq("id", id);
     setUpdating(null);
+    if (error) {
+      setMoveError(error.message);
+      return;
+    }
     router.refresh();
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="space-y-3">
+      {moveError && (
+        <p className="rounded-lg bg-brick-soft px-3 py-2 text-sm text-brick">
+          Verplaatsen mislukt: {moveError}
+        </p>
+      )}
+      <div className="grid gap-4 md:grid-cols-3">
       {COLUMNS.map((col) => {
         const colTasks = tasks.filter((t) => t.status === col.key);
         return (
@@ -81,19 +93,6 @@ export default function KanbanBoard({
                         table="tasks"
                         id={task.id}
                         title="Taak bewerken"
-                        beforeSave={async (values) => {
-                          if (values.owner_id) {
-                            await supabase.from("project_members").upsert(
-                              {
-                                project_id: projectId,
-                                user_id: values.owner_id,
-                                role: "lid",
-                                visible: true,
-                              },
-                              { onConflict: "project_id,user_id", ignoreDuplicates: true }
-                            );
-                          }
-                        }}
                         initialValues={{
                           title: task.title,
                           description: task.description,
@@ -183,6 +182,7 @@ export default function KanbanBoard({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

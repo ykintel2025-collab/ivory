@@ -30,13 +30,6 @@ export default function QuickAddTaskForm({
     setLoading(true);
     setError(null);
 
-    if (projectId && ownerId) {
-      await supabase.from("project_members").upsert(
-        { project_id: projectId, user_id: ownerId, role: "lid", visible: true },
-        { onConflict: "project_id,user_id", ignoreDuplicates: true }
-      );
-    }
-
     const { error: insertError } = await supabase.from("tasks").insert({
       project_id: projectId || null,
       title,

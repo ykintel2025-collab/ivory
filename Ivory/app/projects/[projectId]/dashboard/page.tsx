@@ -1,9 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import StatCard from "@/components/StatCard";
 import Badge from "@/components/Badge";
-import DeleteButton from "@/components/DeleteButton";
-import DeleteProjectButton from "@/components/DeleteProjectButton";
-import ManagePhasesForm from "@/components/ManagePhasesForm";
 import EditModal from "@/components/EditModal";
 import Link from "next/link";
 import Image from "next/image";
@@ -180,38 +177,15 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-        <div className="mb-4">
-          <h2 className="font-display text-lg text-ink">Team</h2>
-          <p className="text-xs text-ink/40">
-            Vult zich automatisch aan zodra je iemand een taak toewijst
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {visibleMembers.map((m: any) => (
-            <div
-              key={m.id}
-              className="flex items-center gap-2 rounded-full border border-ivory-line py-1 pl-3 pr-1.5"
-            >
-              <span className="text-sm text-ink">
-                {m.profiles?.hidden && !canSeeHidden
-                  ? "Intern teamlid"
-                  : m.profiles?.full_name}
-              </span>
-              <DeleteButton
-                table="project_members"
-                id={m.id}
-                confirmText="Deze persoon uit dit project verwijderen?"
-              />
-            </div>
-          ))}
-          {visibleMembers.length === 0 && (
-            <p className="text-sm text-ink/40">
-              Nog niemand — wijs een taak toe aan iemand en die verschijnt hier.
-            </p>
-          )}
-        </div>
-      </div>
+      <Link
+        href={`/projects/${projectId}/settings`}
+        className="flex items-center justify-between rounded-xl border border-ivory-line bg-ivory-card px-6 py-3 text-sm shadow-sm transition hover:border-gold"
+      >
+        <span className="text-ink/60">
+          Team: {visibleMembers.length} {visibleMembers.length === 1 ? "lid" : "leden"}
+        </span>
+        <span className="text-xs font-medium text-ink/40">Beheren in Instellingen →</span>
+      </Link>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
@@ -425,16 +399,6 @@ export default async function DashboardPage({
             <p className="text-sm text-ink/40">Nog geen activiteit geregistreerd.</p>
           )}
         </div>
-      </div>
-
-      <ManagePhasesForm projectId={projectId} phases={phases ?? []} />
-
-      <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-        <h2 className="mb-3 font-display text-lg text-ink/60">Gevarenzone</h2>
-        <DeleteProjectButton
-          projectId={projectId}
-          projectName={project?.name ?? ""}
-        />
       </div>
     </div>
   );

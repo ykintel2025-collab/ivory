@@ -33,16 +33,6 @@ export default function NewTaskForm({
     setLoading(true);
     setError(null);
 
-    // Zorg dat de toegewezen persoon (stil, zonder aparte stap) lid is van dit project
-    if (ownerId) {
-      await supabase
-        .from("project_members")
-        .upsert(
-          { project_id: projectId, user_id: ownerId, role: "lid", visible: true },
-          { onConflict: "project_id,user_id", ignoreDuplicates: true }
-        );
-    }
-
     const { error: insertError } = await supabase.from("tasks").insert({
       project_id: projectId,
       title,

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import NewProjectForm from "@/components/NewProjectForm";
+import ProjectSwitcher from "@/components/ProjectSwitcher";
 
 const NAV = [
   { href: "/projects", label: "Dashboard", icon: "◇" },
@@ -13,7 +14,13 @@ const NAV = [
   { href: "/contacts", label: "Relaties", icon: "◎" },
 ];
 
-export default function GlobalShell({ children }: { children: React.ReactNode }) {
+export default function GlobalShell({
+  children,
+  projects,
+}: {
+  children: React.ReactNode;
+  projects?: { id: string; name: string }[];
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -59,9 +66,17 @@ export default function GlobalShell({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
+        {projects && projects.length > 0 && (
+          <div className="mb-2">
+            <p className="mb-1 px-1 text-xs font-medium text-ivory/40">
+              Ga naar project
+            </p>
+            <ProjectSwitcher projects={projects} />
+          </div>
+        )}
         <button
           onClick={handleLogout}
-          className="mt-4 rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
+          className="mt-2 rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
           Uitloggen
         </button>
@@ -109,6 +124,14 @@ export default function GlobalShell({ children }: { children: React.ReactNode })
                 </Link>
               );
             })}
+            {projects && projects.length > 0 && (
+              <div className="pt-2">
+                <p className="mb-1 px-1 text-xs font-medium text-ivory/40">
+                  Ga naar project
+                </p>
+                <ProjectSwitcher projects={projects} />
+              </div>
+            )}
             <button
               onClick={handleLogout}
               className="mt-2 w-full rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"

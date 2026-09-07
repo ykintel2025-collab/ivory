@@ -5,17 +5,21 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
+import ProjectSwitcher from "@/components/ProjectSwitcher";
 
-function navItems(projectId: string) {
+type NavItem = { href: string; label: string; icon: string; section: string | null };
+
+function allNavItems(projectId: string): NavItem[] {
   return [
-    { href: `/projects/${projectId}/dashboard`, label: "Dashboard", icon: "◇" },
-    { href: `/projects/${projectId}/risks`, label: "Risico's", icon: "▲" },
-    { href: `/projects/${projectId}/tasks`, label: "Taken", icon: "☐" },
-    { href: `/projects/${projectId}/scope`, label: "Scope", icon: "▤" },
-    { href: `/projects/${projectId}/tracker`, label: "Registraties", icon: "✚" },
-    { href: `/projects/${projectId}/suppliers`, label: "Apparatuur", icon: "⬡" },
-    { href: `/projects/${projectId}/parties`, label: "Partijen", icon: "◎" },
-    { href: `/projects/${projectId}/documents`, label: "Documenten", icon: "▦" },
+    { href: `/projects/${projectId}/dashboard`, label: "Dashboard", icon: "◇", section: null },
+    { href: `/projects/${projectId}/risks`, label: "Risico's", icon: "▲", section: "risks" },
+    { href: `/projects/${projectId}/tasks`, label: "Taken", icon: "☐", section: "tasks" },
+    { href: `/projects/${projectId}/scope`, label: "Scope", icon: "▤", section: "scope" },
+    { href: `/projects/${projectId}/tracker`, label: "Registraties", icon: "✚", section: "tracker" },
+    { href: `/projects/${projectId}/suppliers`, label: "Apparatuur", icon: "⬡", section: "suppliers" },
+    { href: `/projects/${projectId}/parties`, label: "Partijen", icon: "◎", section: "parties" },
+    { href: `/projects/${projectId}/documents`, label: "Documenten", icon: "▦", section: "documents" },
+    { href: `/projects/${projectId}/settings`, label: "Instellingen", icon: "⚙", section: null },
   ];
 }
 
@@ -23,16 +27,27 @@ export default function AppShell({
   children,
   projectId,
   projectName,
+  projects,
+  accessLevel = "volledig",
+  allowedSections = [],
 }: {
   children: React.ReactNode;
   projectId: string;
   projectName?: string;
+  projects?: { id: string; name: string }[];
+  accessLevel?: string;
+  allowedSections?: string[];
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const items = navItems(projectId);
+
+  const items = allNavItems(projectId).filter((item) => {
+    if (accessLevel === "volledig") return true;
+    if (item.section === null) return true; // Dashboard en Instellingen altijd zichtbaar
+    return allowedSections.includes(item.section);
+  });
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -44,7 +59,7 @@ export default function AppShell({
     <div className="flex min-h-screen bg-ivory">
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 bg-ink px-4 py-6 md:flex md:flex-col">
-        <Link href="/projects" className="mb-8 flex items-center gap-2 px-2">
+        <Link href="/projects" className="mb-6 flex items-center gap-2 px-2">
           <Image
             src="/logo-crest.png"
             alt="Ivory Global Care"
@@ -56,23 +71,13 @@ export default function AppShell({
         </Link>
 
         <div className="mb-6 px-2">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/projects"
-              className="text-xs font-medium text-ivory/50 hover:text-ivory/80"
-            >
-              ← Alle projecten
-            </Link>
-            <Link
-              href="/contacts"
-              className="text-xs font-medium text-ivory/50 hover:text-ivory/80"
-            >
-              Relaties
-            </Link>
-          </div>
-          <p className="mt-2 truncate font-display text-base text-ivory">
-            {projectName ?? "Project"}
-          </p>
+          {projects && projects.length > 0 ? (
+            <ProjectSwitcher projects={projects} currentProjectId={projectId} />
+          ) : (
+            <p className="truncate font-display text-base text-ivory">
+              {projectName ?? "Project"}
+            </p>
+          )}
         </div>
 
         <nav className="flex-1 space-y-1">
@@ -94,9 +99,15 @@ export default function AppShell({
             );
           })}
         </nav>
+        <Link
+          href="/projects"
+          className="mb-1 rounded-lg px-3 py-2 text-left text-xs font-medium text-ivory/50 hover:bg-ink-soft hover:text-ivory"
+        >
+          ← Alle projecten / Relaties
+        </Link>
         <button
           onClick={handleLogout}
-          className="mt-4 rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
+          className="rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
           Uitloggen
         </button>
@@ -122,6 +133,11 @@ export default function AppShell({
 
       {mobileOpen && (
         <div className="fixed inset-0 top-14 z-10 bg-ink p-4 md:hidden">
+          {projects && projects.length > 0 && (
+            <div className="mb-3">
+              <ProjectSwitcher projects={projects} currentProjectId={projectId} />
+            </div>
+          )}
           <nav className="space-y-1">
             {items.map((item) => {
               const active = pathname?.startsWith(item.href);

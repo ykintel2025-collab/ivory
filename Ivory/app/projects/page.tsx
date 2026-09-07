@@ -136,7 +136,7 @@ export default async function ProjectsPage() {
   const projectOptions = projects.map((p: any) => ({ id: p.id, name: p.name }));
 
   return (
-    <GlobalShell>
+    <GlobalShell projects={projectOptions}>
       <div className="space-y-10">
         <div>
           <h1 className="font-display text-3xl text-ink">Dashboard</h1>
