@@ -15,8 +15,10 @@ export default function SecurityPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
+  const [required, setRequired] = useState(false);
 
   useEffect(() => {
+    setRequired(new URLSearchParams(window.location.search).has("verplicht"));
     loadFactors();
   }, []);
 
@@ -79,12 +81,10 @@ export default function SecurityPage() {
     setQrCode(null);
     setSecret(null);
     setCode("");
-    loadFactors();
-  }
-
-  async function removeFactor(id: string) {
-    if (!window.confirm("Tweestapsverificatie uitschakelen voor jouw account?")) return;
-    await supabase.auth.mfa.unenroll({ factorId: id });
+    if (required) {
+      window.location.href = "/projects";
+      return;
+    }
     loadFactors();
   }
 
@@ -101,6 +101,14 @@ export default function SecurityPage() {
           </p>
         </div>
 
+        {required && (
+          <div className="rounded-xl border border-gold/40 bg-gold-soft p-4 text-sm text-ink">
+            Tweestapsverificatie is verplicht voor iedereen in Ivory Basecamp.
+            Stel het hieronder in om verder te gaan; daarna kom je direct in je
+            projecten.
+          </div>
+        )}
+
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           {!ready ? (
             <p className="text-sm text-ink/40">Bezig...</p>
@@ -115,12 +123,7 @@ export default function SecurityPage() {
                   className="flex items-center justify-between rounded-lg border border-ivory-line px-3 py-2.5"
                 >
                   <span className="text-sm text-ink">Authenticator-app</span>
-                  <button
-                    onClick={() => removeFactor(f.id)}
-                    className="text-xs font-medium text-brick hover:underline"
-                  >
-                    Uitschakelen
-                  </button>
+                  <span className="text-xs text-ink/40">Verplicht</span>
                 </div>
               ))}
             </div>

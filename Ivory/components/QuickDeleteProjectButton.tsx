@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useGlobalRole } from "@/lib/useGlobalRole";
 
 export default function QuickDeleteProjectButton({
   projectId,
@@ -14,6 +15,7 @@ export default function QuickDeleteProjectButton({
   const supabase = createClient();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const { isMaster } = useGlobalRole();
 
   async function handleClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -29,6 +31,8 @@ export default function QuickDeleteProjectButton({
     setBusy(false);
     router.refresh();
   }
+
+  if (!isMaster) return null;
 
   return (
     <button

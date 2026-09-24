@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useGlobalRole } from "@/lib/useGlobalRole";
 
 type Profile = { id: string; full_name: string };
 
@@ -32,6 +33,7 @@ export default function AddProjectMemberForm({
   const [sections, setSections] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isMaster } = useGlobalRole();
 
   function toggleSection(value: string) {
     setSections((prev) =>
@@ -65,6 +67,8 @@ export default function AddProjectMemberForm({
     setOpen(false);
     router.refresh();
   }
+
+  if (!isMaster) return null;
 
   if (availableProfiles.length === 0) {
     return (

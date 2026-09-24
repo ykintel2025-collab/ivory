@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useGlobalRole } from "@/lib/useGlobalRole";
 
 export default function AddGlobalContactForm() {
   const supabase = createClient();
@@ -16,6 +17,7 @@ export default function AddGlobalContactForm() {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isMasterOrMain } = useGlobalRole();
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -46,6 +48,8 @@ export default function AddGlobalContactForm() {
     setOpen(false);
     router.refresh();
   }
+
+  if (!isMasterOrMain) return null;
 
   if (!open) {
     return (

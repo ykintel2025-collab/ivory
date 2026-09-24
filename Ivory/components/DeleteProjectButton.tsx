@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useGlobalRole } from "@/lib/useGlobalRole";
 
 export default function DeleteProjectButton({
   projectId,
@@ -17,6 +18,7 @@ export default function DeleteProjectButton({
   const [confirmText, setConfirmText] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isMaster } = useGlobalRole();
 
   async function handleDelete() {
     setLoading(true);
@@ -34,6 +36,8 @@ export default function DeleteProjectButton({
     router.push("/projects");
     router.refresh();
   }
+
+  if (!isMaster) return null;
 
   if (!open) {
     return (

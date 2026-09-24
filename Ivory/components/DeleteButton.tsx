@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useGlobalRole } from "@/lib/useGlobalRole";
 
 export default function DeleteButton({
   table,
@@ -18,6 +19,7 @@ export default function DeleteButton({
   const supabase = createClient();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const { isMaster } = useGlobalRole();
 
   async function handleDelete() {
     if (!window.confirm(confirmText)) return;
@@ -29,6 +31,8 @@ export default function DeleteButton({
     setBusy(false);
     router.refresh();
   }
+
+  if (!isMaster) return null;
 
   return (
     <button

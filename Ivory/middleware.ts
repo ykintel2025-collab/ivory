@@ -54,6 +54,17 @@ export async function middleware(request: NextRequest) {
       url.pathname = "/verify-2fa";
       return NextResponse.redirect(url);
     }
+
+    // Tweestapsverificatie is verplicht: wie nog geen authenticator heeft,
+    // moet die eerst instellen voordat de rest van de app bereikbaar is.
+    const isSecurity = request.nextUrl.pathname.startsWith("/account/security");
+    const isApi = request.nextUrl.pathname.startsWith("/api");
+    if (aal && aal.nextLevel === "aal1" && !isSecurity && !isApi) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/account/security";
+      url.search = "?verplicht=1";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
