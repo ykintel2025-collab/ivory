@@ -18,7 +18,7 @@ export default function NewProjectForm({
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { isMaster } = useGlobalRole();
+  const { isMasterOrMain } = useGlobalRole();
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -69,7 +69,7 @@ export default function NewProjectForm({
       ? "flex w-full items-center gap-3 rounded-lg border-l-2 border-transparent px-3 py-2 text-left text-sm font-medium text-gold hover:bg-ink-soft"
       : "rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft";
 
-  if (!isMaster) return null;
+  if (!isMasterOrMain) return null;
 
   return (
     <>
