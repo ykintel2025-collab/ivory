@@ -17,6 +17,7 @@ function allNavItems(projectId: string): NavItem[] {
     { href: `/projects/${projectId}/tasks`, label: "Taken", icon: "☐", section: "tasks" },
     { href: `/projects/${projectId}/communication`, label: "Communicatie", icon: "✉", section: "parties" },
     { href: `/projects/${projectId}/parties`, label: "Partijen", icon: "◎", section: "parties" },
+    { href: `/projects/${projectId}/tender`, label: "Tender", icon: "⚖", section: "procurement" },
     { href: `/projects/${projectId}/procurement`, label: "Inkoop", icon: "◈", section: "procurement" },
     { href: `/projects/${projectId}/approvals`, label: "Goedkeuringen", icon: "✚", section: "procurement" },
     { href: `/projects/${projectId}/risks`, label: "Risico's", icon: "▲", section: "risks" },
