@@ -12,8 +12,6 @@ const SECTIONS = [
   { value: "risks", label: "Risico's" },
   { value: "tasks", label: "Taken" },
   { value: "scope", label: "Scope" },
-  { value: "tracker", label: "Registraties" },
-  { value: "suppliers", label: "Apparatuur" },
   { value: "parties", label: "Partijen & Communicatie" },
   { value: "documents", label: "Documenten" },
   { value: "budget", label: "Budget" },

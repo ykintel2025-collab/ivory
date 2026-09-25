@@ -19,6 +19,7 @@ export type ProcActions = {
   deleteSupplier: (id: string) => Promise<boolean>;
   openPackage: (id: string) => void;
   openItems: (filter: Partial<ItemFilter>) => void;
+  goApprovals: () => void;
 };
 
 export type ItemFilter = { search: string; packageId: string; status: string; department: string; flaggedOnly: boolean };
@@ -53,27 +54,28 @@ export default function ProcurementDashboard(props: {
   const [error, setError] = useState<string | null>(null);
 
   function fail(msg: string) {
+    if (msg.includes("BESTELSLOT")) msg = tr("Bestellen kan pas als de goedkeuring voor dit medisch hulpmiddel rond is. Regel dat eerst via Goedkeuringen.");
     setError(msg);
     setTimeout(() => setError(null), 6000);
     return false;
   }
 
+  // Artikelen bijwerken: eerst direct tonen, daarna de door de database aangevulde waarden
+  // overnemen (goedkeuringsstatus volgt de klasse; het bestelslot kan een wijziging weigeren).
+  async function saveItems(ids: string[], patch: Partial<Item>) {
+    const before = items;
+    const set = new Set(ids);
+    setItems((list) => list.map((i) => (set.has(i.id) ? { ...i, ...patch } : i)));
+    const { data, error } = await supabase.from("proc_items").update(patch).in("id", ids).select();
+    if (error) { setItems(before); return fail(tr("Opslaan mislukt: ") + error.message); }
+    const saved = new Map((data ?? []).map((d: any) => [d.id, d as Item]));
+    setItems((list) => list.map((i) => saved.get(i.id) ?? i));
+    return true;
+  }
+
   const actions: ProcActions = {
-    async updateItem(id, patch) {
-      const before = items;
-      setItems((list) => list.map((i) => (i.id === id ? { ...i, ...patch } : i)));
-      const { error } = await supabase.from("proc_items").update(patch).eq("id", id);
-      if (error) { setItems(before); return fail(tr("Opslaan mislukt: ") + error.message); }
-      return true;
-    },
-    async updateItems(ids, patch) {
-      const before = items;
-      const set = new Set(ids);
-      setItems((list) => list.map((i) => (set.has(i.id) ? { ...i, ...patch } : i)));
-      const { error } = await supabase.from("proc_items").update(patch).in("id", ids);
-      if (error) { setItems(before); return fail(tr("Opslaan mislukt: ") + error.message); }
-      return true;
-    },
+    updateItem: (id, patch) => saveItems([id], patch),
+    updateItems: (ids, patch) => saveItems(ids, patch),
     async updatePackage(id, patch) {
       const before = packages;
       setPackages((list) => list.map((p) => (p.id === id ? { ...p, ...patch } : p)));
@@ -107,6 +109,9 @@ export default function ProcurementDashboard(props: {
     openPackage(id) {
       setOpenPackageId(id);
       setTab("pakketten");
+    },
+    goApprovals() {
+      window.location.href = `/projects/${props.projectId}/approvals`;
     },
     openItems(filter) {
       setItemFilter((f) => ({ search: "", packageId: "", status: "", department: "", flaggedOnly: false, ...filter }));

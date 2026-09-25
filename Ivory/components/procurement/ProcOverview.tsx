@@ -40,7 +40,8 @@ export default function ProcOverview({
   const flagged = items.filter((i) => i.flagged).length;
   const noPackage = items.filter((i) => !i.package_id).length;
   const withSupplier = items.filter((i) => i.supplier).length;
-  const medical = items.filter((i) => i.medical_device).length;
+  const medical = items.filter((i) => i.reg_category !== "geen").length;
+  const approved = items.filter((i) => i.reg_category !== "geen" && i.reg_status === "goedgekeurd").length;
   const pct = (n: number) => (items.length ? Math.round((n / items.length) * 100) : 0);
 
   const byStatus = ITEM_STATUSES.map((s) => ({ ...s, n: items.filter((i) => i.status === s.value).length }));
@@ -69,7 +70,7 @@ export default function ProcOverview({
         <Stat label={tr("Pakketten")} value={pkgRows.length} sub={tr("{n} afdelingen", { n: departments.length })} />
         <Stat label={tr("Ingekocht")} value={`${pct(done)}%`} sub={tr("{n} gegund of verder", { n: done })} tone={done ? "ok" : undefined} />
         <Stat label={tr("Met leverancier")} value={withSupplier} sub={`${pct(withSupplier)}%`} />
-        <Stat label={tr("Medische hulpmiddelen")} value={medical} sub={tr("registratie nagaan")} />
+        <Stat label={tr("Goedkeuring nodig")} value={medical} sub={tr("{n} goedgekeurd", { n: approved })} onClick={actions.goApprovals} tone={medical && approved === medical ? "ok" : undefined} />
         <Stat
           label={tr("Te controleren")}
           value={flagged + noPackage}

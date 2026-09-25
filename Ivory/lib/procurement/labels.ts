@@ -31,6 +31,33 @@ export const SUPPLIER_STAGES = [
   { value: "gegund", label: "Gegund", color: "bg-teal-soft text-teal" },
 ];
 
+// Regelgevingscategorie (voorstel tot bevestigd) en registratiestatus bij de bevoegde instantie.
+export const REG_CATEGORIES = [
+  { value: "geen", label: "Geen medisch hulpmiddel", color: "bg-ink/5 text-ink/50" },
+  { value: "klasse_1", label: "Klasse I", color: "bg-teal-soft text-teal" },
+  { value: "klasse_2a", label: "Klasse IIa", color: "bg-amber-soft text-amber" },
+  { value: "klasse_2b", label: "Klasse IIb", color: "bg-brick-soft text-brick" },
+  { value: "klasse_3", label: "Klasse III", color: "bg-brick-soft text-brick" },
+  { value: "ivd", label: "IVD (in-vitro diagnostiek)", color: "bg-gold-soft text-gold" },
+  { value: "nagaan", label: "Nog na te gaan", color: "bg-amber-soft text-amber" },
+];
+
+export const REG_STATUSES = [
+  { value: "niet_nodig", label: "Niet nodig", color: "bg-ink/5 text-ink/50" },
+  { value: "nog_starten", label: "Nog starten", color: "bg-ink/5 text-ink/70" },
+  { value: "dossier_opvragen", label: "Dossier opvragen bij fabrikant", color: "bg-amber-soft text-amber" },
+  { value: "ingediend", label: "Ingediend", color: "bg-gold-soft text-gold" },
+  { value: "goedgekeurd", label: "Goedgekeurd", color: "bg-teal-soft text-teal" },
+  { value: "afgewezen", label: "Afgewezen", color: "bg-brick-soft text-brick" },
+];
+
+// Artikelstatussen die een afgeronde goedkeuring vereisen (bestelslot in de database).
+export const ORDER_STATUSES = new Set(["besteld", "geleverd", "geinstalleerd"]);
+
+export function needsApproval(i: { reg_category: string }) {
+  return i.reg_category !== "geen";
+}
+
 export function labelOf(list: { value: string; label: string }[], value: string | null | undefined): string {
   return list.find((s) => s.value === value)?.label ?? value ?? "—";
 }
@@ -78,6 +105,16 @@ export type Item = {
   currency: string;
   lead_time_weeks: number | null;
   notes: string | null;
+  reg_category: string;
+  reg_confirmed: boolean;
+  reg_status: string;
+  manufacturer: string | null;
+  reg_authority: string | null;
+  reg_number: string | null;
+  reg_submitted_at: string | null;
+  reg_approved_at: string | null;
+  reg_expiry: string | null;
+  reg_notes: string | null;
 };
 
 export type Supplier = {

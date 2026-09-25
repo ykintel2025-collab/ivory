@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useLang, useT } from "@/lib/i18n/client";
 import { DATE_LOCALE } from "@/lib/i18n/translate";
-import { ITEM_STATUSES, colorOf } from "@/lib/procurement/labels";
+import { ITEM_STATUSES, REG_CATEGORIES, REG_STATUSES, colorOf, labelOf } from "@/lib/procurement/labels";
 import type { DeptSummary, Item, Pkg } from "@/lib/procurement/labels";
 import type { ItemFilter, ProcActions } from "./ProcurementDashboard";
 
@@ -246,11 +246,30 @@ function ItemDetail({ item, pkg, actions }: { item: Item; pkg?: Pkg; actions: Pr
           {field("lead_time_weeks", tr("Levertijd (weken)"), { inputMode: "numeric" })}
         </div>
         {field("notes", tr("Notities"))}
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-ivory-line bg-ivory-card p-2.5 text-xs">
+          <span className="font-medium text-ink/60">{tr("Goedkeuring")}:</span>
+          <select
+            className={`rounded-full border-0 px-2 py-0.5 text-xs font-medium ${colorOf(REG_CATEGORIES, item.reg_category)}`}
+            value={item.reg_category}
+            onChange={(e) => actions.updateItem(item.id, { reg_category: e.target.value, reg_confirmed: true })}
+          >
+            {REG_CATEGORIES.map((c) => (
+              <option key={c.value} value={c.value}>{tr(c.label)}</option>
+            ))}
+          </select>
+          {!item.reg_confirmed && <span className="rounded-full bg-amber-soft px-1.5 py-0.5 font-semibold uppercase text-amber">{tr("voorstel")}</span>}
+          {item.reg_category !== "geen" && (
+            <span className={`rounded-full px-2 py-0.5 font-medium ${colorOf(REG_STATUSES, item.reg_status)}`}>
+              {tr(labelOf(REG_STATUSES, item.reg_status))}
+            </span>
+          )}
+          {item.reg_category !== "geen" && (
+            <button onClick={actions.goApprovals} className="ml-auto text-ink/50 underline hover:text-ink">
+              {tr("Naar Goedkeuringen →")}
+            </button>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2 text-xs">
-          <label className="flex items-center gap-1.5 text-ink/70">
-            <input type="checkbox" checked={item.medical_device} onChange={(e) => actions.updateItem(item.id, { medical_device: e.target.checked })} />
-            {tr("Medisch hulpmiddel (registratie nodig)")}
-          </label>
           {item.unit_price != null && (
             <span className="rounded-full bg-gold-soft px-2 py-0.5 font-medium text-gold">
               {tr("Totaal")}: € {(item.unit_price * item.total_qty).toLocaleString(locale, { maximumFractionDigits: 0 })}
