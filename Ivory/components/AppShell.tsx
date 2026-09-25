@@ -20,6 +20,7 @@ function allNavItems(projectId: string): NavItem[] {
     { href: `/projects/${projectId}/tracker`, label: "Registraties", icon: "✚", section: "tracker" },
     { href: `/projects/${projectId}/suppliers`, label: "Apparatuur", icon: "⬡", section: "suppliers" },
     { href: `/projects/${projectId}/parties`, label: "Partijen", icon: "◎", section: "parties" },
+    { href: `/projects/${projectId}/procurement`, label: "Inkoop", icon: "◈", section: "procurement" },
     { href: `/projects/${projectId}/documents`, label: "Documenten", icon: "▦", section: "documents" },
     { href: `/projects/${projectId}/settings`, label: "Instellingen", icon: "⚙", section: null },
   ];

@@ -17,6 +17,7 @@ const SECTIONS = [
   { value: "parties", label: "Partijen & Communicatie" },
   { value: "documents", label: "Documenten" },
   { value: "budget", label: "Budget" },
+  { value: "procurement", label: "Inkoop" },
 ];
 
 export default function AssignUserToProjectForm({

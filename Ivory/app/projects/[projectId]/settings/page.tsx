@@ -17,6 +17,7 @@ const SECTION_LABELS: Record<string, string> = {
   parties: "Partijen",
   documents: "Documenten",
   budget: "Budget",
+  procurement: "Inkoop",
 };
 
 export default async function SettingsPage({
