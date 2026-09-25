@@ -43,10 +43,11 @@ export default async function DashboardPage({
       .single(),
     supabase.from("risks").select("*").eq("project_id", projectId),
     supabase
-      .from("external_blockers")
-      .select("*, contacts(name)")
+      .from("tasks")
+      .select("id, contacts(name)")
       .eq("project_id", projectId)
-      .eq("status", "open"),
+      .eq("waiting", true)
+      .neq("status", "klaar"),
     supabase
       .from("tasks")
       .select("*, phases(number, name)")

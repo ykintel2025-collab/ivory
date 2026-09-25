@@ -15,11 +15,12 @@ function allNavItems(projectId: string): NavItem[] {
   return [
     { href: `/projects/${projectId}/dashboard`, label: "Dashboard", icon: "◇", section: null },
     { href: `/projects/${projectId}/tasks`, label: "Taken", icon: "☐", section: "tasks" },
-    { href: `/projects/${projectId}/risks`, label: "Risico's", icon: "▲", section: "risks" },
-    { href: `/projects/${projectId}/scope`, label: "Scope", icon: "▤", section: "scope" },
+    { href: `/projects/${projectId}/communication`, label: "Communicatie", icon: "✉", section: "parties" },
+    { href: `/projects/${projectId}/parties`, label: "Partijen", icon: "◎", section: "parties" },
     { href: `/projects/${projectId}/procurement`, label: "Inkoop", icon: "◈", section: "procurement" },
     { href: `/projects/${projectId}/approvals`, label: "Goedkeuringen", icon: "✚", section: "procurement" },
-    { href: `/projects/${projectId}/parties`, label: "Partijen", icon: "◎", section: "parties" },
+    { href: `/projects/${projectId}/risks`, label: "Risico's", icon: "▲", section: "risks" },
+    { href: `/projects/${projectId}/scope`, label: "Scope", icon: "▤", section: "scope" },
     { href: `/projects/${projectId}/documents`, label: "Documenten", icon: "▦", section: "documents" },
     { href: `/projects/${projectId}/settings`, label: "Instellingen", icon: "⚙", section: null },
   ];

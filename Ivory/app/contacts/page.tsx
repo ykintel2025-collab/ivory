@@ -1,9 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
-import DeleteButton from "@/components/DeleteButton";
-import EditModal from "@/components/EditModal";
 import GlobalShell from "@/components/GlobalShell";
-import AddGlobalContactForm from "@/components/AddGlobalContactForm";
+import PartiesView from "@/components/parties/PartiesView";
 import { getMyProjects } from "@/lib/getMyProjects";
 import { getT } from "@/lib/i18n/server";
 
@@ -12,102 +9,40 @@ export const dynamic = "force-dynamic";
 export default async function ContactsPage() {
   const supabase = createClient();
   const tr = getT();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const { data: contacts } = await supabase
-    .from("contacts")
-    .select("*, project_contacts(project_id, role, projects(id, name))")
-    .order("name");
+  const [{ data: contacts }, { data: log }, { data: profiles }, { data: viewer }, projects] = await Promise.all([
+    supabase.from("contacts").select("*, project_contacts(project_id, party_role, projects(id, name))").order("name"),
+    supabase.from("communication_log").select("party_id, contact_date").not("party_id", "is", null),
+    supabase.from("profiles").select("id, full_name").order("full_name"),
+    supabase.from("profiles").select("global_role").eq("id", user?.id ?? "").single(),
+    getMyProjects(),
+  ]);
 
-  const projects = await getMyProjects();
+  const lastContact: Record<string, string> = {};
+  for (const l of log ?? []) if (!lastContact[l.party_id] || l.contact_date > lastContact[l.party_id]) lastContact[l.party_id] = l.contact_date;
 
   return (
     <GlobalShell projects={projects}>
       <div className="space-y-6">
         <div>
-          <h1 className="font-display text-3xl text-ink">
-            {tr("Relaties")}
-          </h1>
+          <h1 className="font-display text-3xl text-ink">{tr("Relaties")}</h1>
           <p className="text-sm text-ink/50">
-            {tr("Alle partijen, algemeen — wijs ze per project toe vanuit de Partijen-pagina van dat project.")}
+            {tr("Alle contacten, over alle projecten heen. Koppel ze aan een project via Partijen in dat project.")}
           </p>
         </div>
-
-        <AddGlobalContactForm />
-
-        <div className="space-y-3">
-          {(contacts ?? []).map((c: any) => (
-            <div
-              key={c.id}
-              className="relative rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
-            >
-              <div className="absolute right-4 top-4 flex items-center gap-1">
-                <EditModal
-                  table="contacts"
-                  id={c.id}
-                  title={tr("Relatie bewerken")}
-                  initialValues={{
-                    name: c.name,
-                    type: c.type,
-                    contact_name: c.contact_name,
-                    contact_email: c.contact_email,
-                    contact_phone: c.contact_phone,
-                    notes: c.notes,
-                  }}
-                  fields={[
-                    { key: "name", label: tr("Naam"), type: "text" },
-                    { key: "type", label: tr("Type / rol algemeen"), type: "text" },
-                    { key: "contact_name", label: tr("Contactpersoon"), type: "text" },
-                    { key: "contact_email", label: tr("E-mail"), type: "text" },
-                    { key: "contact_phone", label: tr("Telefoon"), type: "text" },
-                    { key: "notes", label: tr("Notities"), type: "textarea" },
-                  ]}
-                />
-                <DeleteButton
-                  table="contacts"
-                  id={c.id}
-                  confirmText={tr("{naam} volledig verwijderen? Dit verwijdert ook de koppeling met alle projecten.", { naam: c.name })}
-                />
-              </div>
-              <div className="pr-16">
-                <p className="font-display text-lg text-ink">{c.name}</p>
-                {c.type && <p className="text-xs text-ink/50">{c.type}</p>}
-                {c.contact_name && (
-                  <p className="mt-1 text-xs text-ink/40">
-                    {c.contact_name}
-                    {c.contact_email && ` · ${c.contact_email}`}
-                    {c.contact_phone && ` · ${c.contact_phone}`}
-                  </p>
-                )}
-                {c.notes && <p className="mt-2 text-xs text-ink/50">{c.notes}</p>}
-
-                {c.project_contacts?.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {c.project_contacts.map((pc: any) => (
-                      <Link
-                        key={pc.project_id}
-                        href={`/projects/${pc.project_id}/parties`}
-                        className="rounded-full bg-gold-soft px-2.5 py-1 text-xs font-medium text-gold hover:opacity-80"
-                      >
-                        {pc.projects?.name}
-                        {pc.role ? ` — ${pc.role}` : ""}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                {(!c.project_contacts || c.project_contacts.length === 0) && (
-                  <p className="mt-3 text-xs text-ink/30">
-                    {tr("Nog aan geen enkel project gekoppeld.")}
-                  </p>
-                )}
-              </div>
-            </div>
-          ))}
-          {(contacts ?? []).length === 0 && (
-            <p className="text-sm text-ink/40">
-              {tr("Nog geen relaties. Voeg er een toe via de Partijen-pagina van een project.")}
-            </p>
-          )}
-        </div>
+        <PartiesView
+          projectId={null}
+          parties={[]}
+          contacts={(contacts ?? []) as any}
+          lastContact={lastContact}
+          openActions={{}}
+          profiles={profiles ?? []}
+          canManage={viewer?.global_role === "master" || viewer?.global_role === "main"}
+          isMaster={viewer?.global_role === "master"}
+        />
       </div>
     </GlobalShell>
   );

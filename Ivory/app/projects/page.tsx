@@ -43,9 +43,10 @@ export default async function ProjectsPage() {
       .eq("status", "open")
       .eq("rating", "hoog"),
     supabase
-      .from("external_blockers")
+      .from("tasks")
       .select("*, projects(name), contacts(name)")
-      .eq("status", "open"),
+      .eq("waiting", true)
+      .neq("status", "klaar"),
     supabase
       .from("tasks")
       .select("*, projects(name)")
@@ -223,7 +224,7 @@ export default async function ProjectsPage() {
               {(openBlockers ?? []).map((b: any) => (
                 <Link
                   key={b.id}
-                  href={`/projects/${b.project_id}/parties`}
+                  href={`/projects/${b.project_id}/communication`}
                   className="flex items-center justify-between rounded-lg border border-ivory-line px-3 py-2 transition hover:border-gold"
                 >
                   <div>
