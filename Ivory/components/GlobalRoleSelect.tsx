@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 const LABELS: Record<string, string> = {
   master: "Master",
@@ -20,6 +21,7 @@ export default function GlobalRoleSelect({
   disabled?: boolean;
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +35,7 @@ export default function GlobalRoleSelect({
   if (disabled) {
     return (
       <span className="rounded-full bg-ink/5 px-2.5 py-1 text-xs font-medium text-ink/60">
-        {LABELS[currentRole] ?? currentRole}
+        {tr(LABELS[currentRole] ?? currentRole)}
       </span>
     );
   }
@@ -45,7 +47,7 @@ export default function GlobalRoleSelect({
       onChange={(e) => handleChange(e.target.value)}
       className="rounded-full border border-gold/40 bg-gold-soft px-2 py-1 text-xs font-medium text-gold focus:outline-none disabled:opacity-50"
     >
-      <option value="user">Standaard</option>
+      <option value="user">{tr("Standaard")}</option>
       <option value="main">Main user</option>
       <option value="master">Master</option>
     </select>

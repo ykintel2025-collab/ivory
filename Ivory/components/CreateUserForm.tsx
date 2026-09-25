@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useT } from "@/lib/i18n/client";
 
 export default function CreateUserForm() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+const tr = useT();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,7 +29,7 @@ export default function CreateUserForm() {
     setLoading(false);
 
     if (!res.ok) {
-      setError(result.error ?? "Aanmaken mislukt.");
+      setError(result.error ?? tr("Aanmaken mislukt."));
       return;
     }
 
@@ -44,7 +46,7 @@ export default function CreateUserForm() {
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Nieuwe gebruiker aanmaken
+        {tr("+ Nieuwe gebruiker aanmaken")}
       </button>
     );
   }
@@ -54,11 +56,11 @@ export default function CreateUserForm() {
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuwe gebruiker</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuwe gebruiker")}</h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Naam
+          {tr("Naam")}
         </label>
         <input
           required
@@ -70,21 +72,21 @@ export default function CreateUserForm() {
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          E-mail (gebruikt om in te loggen)
+          {tr("E-mail (gebruikt om in te loggen)")}
         </label>
         <input
           required
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="naam@ivory.nl"
+          placeholder={tr("naam@ivory.nl")}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         />
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Tijdelijk wachtwoord (minimaal 8 tekens)
+          {tr("Tijdelijk wachtwoord (minimaal 8 tekens)")}
         </label>
         <input
           required
@@ -95,8 +97,7 @@ export default function CreateUserForm() {
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         />
         <p className="mt-1 text-xs text-ink/40">
-          Geef dit door aan de persoon in kwestie — die kan het later zelf
-          wijzigen.
+          {tr("Geef dit door aan de persoon in kwestie — die kan het later zelf wijzigen.")}
         </p>
       </div>
 
@@ -112,14 +113,14 @@ export default function CreateUserForm() {
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Aanmaken"}
+          {loading ? tr("Bezig...") : tr("Aanmaken")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

@@ -5,11 +5,13 @@ import EditModal from "@/components/EditModal";
 import GlobalShell from "@/components/GlobalShell";
 import AddGlobalContactForm from "@/components/AddGlobalContactForm";
 import { getMyProjects } from "@/lib/getMyProjects";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function ContactsPage() {
   const supabase = createClient();
+  const tr = getT();
 
   const { data: contacts } = await supabase
     .from("contacts")
@@ -23,11 +25,10 @@ export default async function ContactsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="font-display text-3xl text-ink">
-            Relaties
+            {tr("Relaties")}
           </h1>
           <p className="text-sm text-ink/50">
-            Alle partijen, algemeen — wijs ze per project toe vanuit de
-            Partijen-pagina van dat project.
+            {tr("Alle partijen, algemeen — wijs ze per project toe vanuit de Partijen-pagina van dat project.")}
           </p>
         </div>
 
@@ -43,7 +44,7 @@ export default async function ContactsPage() {
                 <EditModal
                   table="contacts"
                   id={c.id}
-                  title="Relatie bewerken"
+                  title={tr("Relatie bewerken")}
                   initialValues={{
                     name: c.name,
                     type: c.type,
@@ -53,18 +54,18 @@ export default async function ContactsPage() {
                     notes: c.notes,
                   }}
                   fields={[
-                    { key: "name", label: "Naam", type: "text" },
-                    { key: "type", label: "Type / rol algemeen", type: "text" },
-                    { key: "contact_name", label: "Contactpersoon", type: "text" },
-                    { key: "contact_email", label: "E-mail", type: "text" },
-                    { key: "contact_phone", label: "Telefoon", type: "text" },
-                    { key: "notes", label: "Notities", type: "textarea" },
+                    { key: "name", label: tr("Naam"), type: "text" },
+                    { key: "type", label: tr("Type / rol algemeen"), type: "text" },
+                    { key: "contact_name", label: tr("Contactpersoon"), type: "text" },
+                    { key: "contact_email", label: tr("E-mail"), type: "text" },
+                    { key: "contact_phone", label: tr("Telefoon"), type: "text" },
+                    { key: "notes", label: tr("Notities"), type: "textarea" },
                   ]}
                 />
                 <DeleteButton
                   table="contacts"
                   id={c.id}
-                  confirmText={`${c.name} volledig verwijderen? Dit verwijdert ook de koppeling met alle projecten.`}
+                  confirmText={tr("{naam} volledig verwijderen? Dit verwijdert ook de koppeling met alle projecten.", { naam: c.name })}
                 />
               </div>
               <div className="pr-16">
@@ -95,7 +96,7 @@ export default async function ContactsPage() {
                 )}
                 {(!c.project_contacts || c.project_contacts.length === 0) && (
                   <p className="mt-3 text-xs text-ink/30">
-                    Nog aan geen enkel project gekoppeld.
+                    {tr("Nog aan geen enkel project gekoppeld.")}
                   </p>
                 )}
               </div>
@@ -103,8 +104,7 @@ export default async function ContactsPage() {
           ))}
           {(contacts ?? []).length === 0 && (
             <p className="text-sm text-ink/40">
-              Nog geen relaties. Voeg er een toe via de Partijen-pagina van een
-              project.
+              {tr("Nog geen relaties. Voeg er een toe via de Partijen-pagina van een project.")}
             </p>
           )}
         </div>

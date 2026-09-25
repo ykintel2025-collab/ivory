@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 export default function AddGlobalContactForm() {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -35,7 +37,7 @@ export default function AddGlobalContactForm() {
 
     setLoading(false);
     if (insertError) {
-      setError("Aanmaken mislukt: " + insertError.message);
+      setError(tr("Aanmaken mislukt: ") + insertError.message);
       return;
     }
 
@@ -57,7 +59,7 @@ export default function AddGlobalContactForm() {
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Nieuwe relatie
+        {tr("+ Nieuwe relatie")}
       </button>
     );
   }
@@ -67,15 +69,14 @@ export default function AddGlobalContactForm() {
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuwe relatie</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuwe relatie")}</h2>
       <p className="text-xs text-ink/40">
-        Algemeen aangemaakt — wijs later toe aan een of meerdere projecten
-        vanuit de Partijen-pagina van dat project.
+        {tr("Algemeen aangemaakt — wijs later toe aan een of meerdere projecten vanuit de Partijen-pagina van dat project.")}
       </p>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Naam (bedrijf of persoon)
+          {tr("Naam (bedrijf of persoon)")}
         </label>
         <input
           required
@@ -87,12 +88,12 @@ export default function AddGlobalContactForm() {
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Type / sector (optioneel)
+          {tr("Type / sector (optioneel)")}
         </label>
         <input
           value={type}
           onChange={(e) => setType(e.target.value)}
-          placeholder="bv. Juridisch adviseur, Leverancier"
+          placeholder={tr("bv. Juridisch adviseur, Leverancier")}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         />
       </div>
@@ -100,7 +101,7 @@ export default function AddGlobalContactForm() {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Contactpersoon
+            {tr("Contactpersoon")}
           </label>
           <input
             value={contactName}
@@ -110,7 +111,7 @@ export default function AddGlobalContactForm() {
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            E-mail
+            {tr("E-mail")}
           </label>
           <input
             type="email"
@@ -121,7 +122,7 @@ export default function AddGlobalContactForm() {
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Telefoon
+            {tr("Telefoon")}
           </label>
           <input
             value={contactPhone}
@@ -133,7 +134,7 @@ export default function AddGlobalContactForm() {
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Notities
+          {tr("Notities")}
         </label>
         <textarea
           value={notes}
@@ -155,14 +156,14 @@ export default function AddGlobalContactForm() {
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Aanmaken"}
+          {loading ? tr("Bezig...") : tr("Aanmaken")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

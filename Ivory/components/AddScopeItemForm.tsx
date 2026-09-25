@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 export default function AddScopeItemForm({ projectId }: { projectId: string }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
@@ -32,7 +34,7 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
 
     setLoading(false);
     if (insertError) {
-      setError("Aanmaken mislukt: " + insertError.message);
+      setError(tr("Aanmaken mislukt: ") + insertError.message);
       return;
     }
 
@@ -51,7 +53,7 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Scope-item toevoegen
+        {tr("+ Scope-item toevoegen")}
       </button>
     );
   }
@@ -61,10 +63,10 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuw scope-item</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuw scope-item")}</h2>
 
       <div>
-        <label className="mb-1 block text-xs font-medium text-ink/60">Item</label>
+        <label className="mb-1 block text-xs font-medium text-ink/60">{tr("Item")}</label>
         <input
           required
           value={itemName}
@@ -76,20 +78,20 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Status
+            {tr("Status")}
           </label>
           <select
             value={inScope}
             onChange={(e) => setInScope(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="true">In scope</option>
-            <option value="false">Buiten scope</option>
+            <option value="true">{tr("In scope")}</option>
+            <option value="false">{tr("Buiten scope")}</option>
           </select>
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Brondatum
+            {tr("Brondatum")}
           </label>
           <input
             type="date"
@@ -102,7 +104,7 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Toelichting
+          {tr("Toelichting")}
         </label>
         <textarea
           value={explanation}
@@ -114,7 +116,7 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Bron (bv. "QHC-antwoord 6 aug 2026")
+          {tr("Bron (bv. \"QHC-antwoord 6 aug 2026\")")}
         </label>
         <input
           value={sourceReference}
@@ -135,14 +137,14 @@ export default function AddScopeItemForm({ projectId }: { projectId: string }) {
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Toevoegen"}
+          {loading ? tr("Bezig...") : tr("Toevoegen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

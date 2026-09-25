@@ -3,6 +3,7 @@ import Badge from "@/components/Badge";
 import AddRiskForm from "@/components/AddRiskForm";
 import DeleteButton from "@/components/DeleteButton";
 import EditModal from "@/components/EditModal";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default async function RisksPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
   const projectId = params.projectId;
 
   const [{ data: risks }, { data: members }] = await Promise.all([
@@ -31,7 +33,7 @@ export default async function RisksPage({
 
   const memberList = (members ?? []).map((m: any) => ({
     user_id: m.user_id,
-    full_name: m.profiles?.full_name ?? "Onbekend",
+    full_name: m.profiles?.full_name ?? tr("Onbekend"),
   }));
 
   const sorted = [...(risks ?? [])].sort(
@@ -41,9 +43,9 @@ export default async function RisksPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl text-ink">Risicoregister</h1>
+        <h1 className="font-display text-2xl text-ink">{tr("Risicoregister")}</h1>
         <p className="text-sm text-ink/50">
-          Alle geïdentificeerde risico's, beoordeling en mitigatie
+          {tr("Alle geïdentificeerde risico's, beoordeling en mitigatie")}
         </p>
       </div>
 
@@ -53,11 +55,11 @@ export default async function RisksPage({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-ivory-line bg-ivory text-xs uppercase tracking-wide text-ink/50">
             <tr>
-              <th className="px-4 py-3">Risico</th>
-              <th className="px-4 py-3">Score</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Mitigatie</th>
-              <th className="px-4 py-3">Eigenaar</th>
+              <th className="px-4 py-3">{tr("Risico")}</th>
+              <th className="px-4 py-3">{tr("Score")}</th>
+              <th className="px-4 py-3">{tr("Status")}</th>
+              <th className="px-4 py-3">{tr("Mitigatie")}</th>
+              <th className="px-4 py-3">{tr("Eigenaar")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -87,7 +89,7 @@ export default async function RisksPage({
                     <EditModal
                       table="risks"
                       id={r.id}
-                      title="Risico bewerken"
+                      title={tr("Risico bewerken")}
                       initialValues={{
                         title: r.title,
                         description: r.description,
@@ -97,34 +99,34 @@ export default async function RisksPage({
                         owner_id: r.owner_id,
                       }}
                       fields={[
-                        { key: "title", label: "Titel", type: "text" },
-                        { key: "description", label: "Omschrijving", type: "textarea" },
+                        { key: "title", label: tr("Titel"), type: "text" },
+                        { key: "description", label: tr("Omschrijving"), type: "textarea" },
                         {
                           key: "rating",
-                          label: "Score",
+                          label: tr("Score"),
                           type: "select",
                           options: [
-                            { value: "hoog", label: "Hoog" },
-                            { value: "midden", label: "Midden" },
-                            { value: "laag", label: "Laag" },
+                            { value: "hoog", label: tr("Hoog") },
+                            { value: "midden", label: tr("Midden") },
+                            { value: "laag", label: tr("Laag") },
                           ],
                         },
                         {
                           key: "status",
-                          label: "Status",
+                          label: tr("Status"),
                           type: "select",
                           options: [
-                            { value: "open", label: "Open" },
-                            { value: "opgelost", label: "Opgelost" },
+                            { value: "open", label: tr("Open") },
+                            { value: "opgelost", label: tr("Opgelost") },
                           ],
                         },
-                        { key: "mitigation", label: "Mitigatie", type: "textarea" },
+                        { key: "mitigation", label: tr("Mitigatie"), type: "textarea" },
                         {
                           key: "owner_id",
-                          label: "Eigenaar",
+                          label: tr("Eigenaar"),
                           type: "select",
                           options: [
-                            { value: "", label: "Niemand" },
+                            { value: "", label: tr("Niemand") },
                             ...memberList.map((m) => ({
                               value: m.user_id,
                               label: m.full_name,
@@ -141,7 +143,7 @@ export default async function RisksPage({
             {sorted.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center text-ink/40">
-                  Nog geen risico's toegevoegd.
+                  {tr("Nog geen risico's toegevoegd.")}
                 </td>
               </tr>
             )}

@@ -5,6 +5,7 @@ import AssignUserToProjectForm from "@/components/AssignUserToProjectForm";
 import DeleteButton from "@/components/DeleteButton";
 import GlobalRoleSelect from "@/components/GlobalRoleSelect";
 import CreateUserForm from "@/components/CreateUserForm";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 export default async function GlobalSettingsPage() {
   const supabase = createClient();
+  const tr = getT();
 
   const {
     data: { user },
@@ -50,19 +52,18 @@ export default async function GlobalSettingsPage() {
     <GlobalShell projects={projectOptions}>
       <div className="space-y-8">
         <div>
-          <h1 className="font-display text-3xl text-ink">Instellingen</h1>
+          <h1 className="font-display text-3xl text-ink">{tr("Instellingen")}</h1>
           <p className="text-sm text-ink/50">
-            Gebruikersbeheer en toegang tot al je projecten, centraal
+            {tr("Gebruikersbeheer en toegang tot al je projecten, centraal")}
           </p>
         </div>
 
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="font-display text-lg text-ink">Gebruikers</h2>
+              <h2 className="font-display text-lg text-ink">{tr("Gebruikers")}</h2>
               <p className="text-xs text-ink/40">
-                Geblokkeerd ontneemt iemand toegang tot alles, ongeacht bij
-                hoeveel projecten diegene staat.
+                {tr("Geblokkeerd ontneemt iemand toegang tot alles, ongeacht bij hoeveel projecten diegene staat.")}
               </p>
             </div>
             {isMaster && <CreateUserForm />}
@@ -84,10 +85,10 @@ export default async function GlobalSettingsPage() {
                       <p className="text-sm font-medium text-ink">
                         {p.full_name}
                         {p.id === user?.id && (
-                          <span className="ml-2 text-xs text-ink/40">(jij)</span>
+                          <span className="ml-2 text-xs text-ink/40">{tr("(jij)")}</span>
                         )}
                       </p>
-                      <p className="text-xs text-ink/40">{p.role}</p>
+                      <p className="text-xs text-ink/40">{tr(p.role)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <GlobalRoleSelect
@@ -101,9 +102,8 @@ export default async function GlobalSettingsPage() {
 
                   {p.global_role === "master" || p.global_role === "main" ? (
                     <p className="mt-2 text-xs text-ink/50">
-                      {p.global_role === "master" ? "Master" : "Main user"} —
-                      heeft toegang tot alle projecten en onderdelen, ongeacht
-                      onderstaande koppelingen.
+                      {p.global_role === "master" ? "Master" : "Main user"} —{" "}
+                      {tr("heeft toegang tot alle projecten en onderdelen, ongeacht onderstaande koppelingen.")}
                     </p>
                   ) : null}
 
@@ -119,13 +119,13 @@ export default async function GlobalSettingsPage() {
                           </span>
                           <span className="ml-2 text-ink/40">
                             {m.role === "eigenaar"
-                              ? "Eigenaar"
+                              ? tr("Eigenaar")
                               : m.access_level === "volledig"
-                              ? "Volledige toegang"
-                              : `Beperkt: ${
+                              ? tr("Volledige toegang")
+                              : `${tr("Beperkt")}: ${
                                   (m.allowed_sections ?? [])
-                                    .map((s: string) => SECTION_LABELS[s] ?? s)
-                                    .join(", ") || "geen onderdelen"
+                                    .map((s: string) => tr(SECTION_LABELS[s] ?? s))
+                                    .join(", ") || tr("geen onderdelen")
                                 }`}
                           </span>
                         </div>
@@ -133,13 +133,13 @@ export default async function GlobalSettingsPage() {
                           <DeleteButton
                             table="project_members"
                             id={m.id}
-                            confirmText={`${p.full_name} loskoppelen van ${m.projects?.name}?`}
+                            confirmText={tr("{naam} loskoppelen van {project}?", { naam: p.full_name, project: m.projects?.name ?? "" })}
                           />
                         )}
                       </div>
                     ))}
                     {memberships.length === 0 && (
-                      <p className="text-xs text-ink/30">Nog aan geen enkel project gekoppeld.</p>
+                      <p className="text-xs text-ink/30">{tr("Nog aan geen enkel project gekoppeld.")}</p>
                     )}
                   </div>
 
@@ -151,7 +151,7 @@ export default async function GlobalSettingsPage() {
               );
             })}
             {(profiles ?? []).length === 0 && (
-              <p className="text-sm text-ink/40">Geen gebruikers gevonden.</p>
+              <p className="text-sm text-ink/40">{tr("Geen gebruikers gevonden.")}</p>
             )}
           </div>
         </div>

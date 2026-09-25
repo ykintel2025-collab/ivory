@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, IBM_Plex_Sans } from "next/font/google";
 import "./globals.css";
+import { getLang } from "@/lib/i18n/server";
+import { LangProvider } from "@/lib/i18n/client";
 
 const display = Playfair_Display({
   subsets: ["latin"],
@@ -27,9 +29,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const lang = getLang();
   return (
-    <html lang="nl" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+    <html lang={lang} className={`${display.variable} ${body.variable}`}>
+      <body>
+        <LangProvider lang={lang}>{children}</LangProvider>
+      </body>
     </html>
   );
 }

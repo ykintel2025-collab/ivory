@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 export default function QuickDeleteProjectButton({
   projectId,
@@ -13,6 +14,7 @@ export default function QuickDeleteProjectButton({
   projectName: string;
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const { isMaster } = useGlobalRole();
@@ -22,7 +24,7 @@ export default function QuickDeleteProjectButton({
     e.stopPropagation();
 
     const typed = window.prompt(
-      `Typ de projectnaam ("${projectName}") om "${projectName}" definitief te verwijderen, inclusief alle risico's, taken en documenten:`
+      tr("Typ de projectnaam (\"{naam}\") om \"{naam}\" definitief te verwijderen, inclusief alle risico's, taken en documenten:", { naam: projectName })
     );
     if (typed !== projectName) return;
 
@@ -38,7 +40,7 @@ export default function QuickDeleteProjectButton({
     <button
       onClick={handleClick}
       disabled={busy}
-      title="Project verwijderen"
+      title={tr("Project verwijderen")}
       className="rounded-md p-1 text-ink/30 transition hover:bg-brick-soft hover:text-brick disabled:opacity-50"
     >
       ✕

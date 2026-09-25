@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 type Profile = { id: string; full_name: string };
 
@@ -26,6 +27,7 @@ export default function AddProjectMemberForm({
   availableProfiles: Profile[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
@@ -57,7 +59,7 @@ export default function AddProjectMemberForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Toevoegen mislukt: " + insertError.message);
+      setError(tr("Toevoegen mislukt: ") + insertError.message);
       return;
     }
 
@@ -73,9 +75,7 @@ export default function AddProjectMemberForm({
   if (availableProfiles.length === 0) {
     return (
       <p className="text-xs text-ink/40">
-        Iedereen met een account staat al in dit project. Nieuwe collega's
-        maak je eerst aan via Supabase → Authentication → Users, daarna
-        verschijnen ze hier.
+        {tr("Iedereen met een account staat al in dit project. Nieuwe collega's maak je eerst aan via Instellingen, daarna verschijnen ze hier.")}
       </p>
     );
   }
@@ -86,7 +86,7 @@ export default function AddProjectMemberForm({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Teamlid toevoegen
+        {tr("+ Teamlid toevoegen")}
       </button>
     );
   }
@@ -96,11 +96,11 @@ export default function AddProjectMemberForm({
       onSubmit={handleAdd}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Teamlid toevoegen</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Teamlid toevoegen")}</h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Persoon
+          {tr("Persoon")}
         </label>
         <select
           required
@@ -108,7 +108,7 @@ export default function AddProjectMemberForm({
           onChange={(e) => setUserId(e.target.value)}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         >
-          <option value="">Kies iemand...</option>
+          <option value="">{tr("Kies iemand...")}</option>
           {availableProfiles.map((p) => (
             <option key={p.id} value={p.id}>
               {p.full_name}
@@ -119,7 +119,7 @@ export default function AddProjectMemberForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Toegangsniveau
+          {tr("Toegangsniveau")}
         </label>
         <div className="flex gap-3">
           <label className="flex items-center gap-1.5 text-sm text-ink">
@@ -128,7 +128,7 @@ export default function AddProjectMemberForm({
               checked={accessLevel === "volledig"}
               onChange={() => setAccessLevel("volledig")}
             />
-            Volledig — ziet alles
+            {tr("Volledig — ziet alles")}
           </label>
           <label className="flex items-center gap-1.5 text-sm text-ink">
             <input
@@ -136,7 +136,7 @@ export default function AddProjectMemberForm({
               checked={accessLevel === "beperkt"}
               onChange={() => setAccessLevel("beperkt")}
             />
-            Beperkt — alleen gekozen onderdelen
+            {tr("Beperkt — alleen gekozen onderdelen")}
           </label>
         </div>
       </div>
@@ -144,7 +144,7 @@ export default function AddProjectMemberForm({
       {accessLevel === "beperkt" && (
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Zichtbare onderdelen
+            {tr("Zichtbare onderdelen")}
           </label>
           <div className="grid grid-cols-2 gap-1.5">
             {SECTIONS.map((s) => (
@@ -157,7 +157,7 @@ export default function AddProjectMemberForm({
                   checked={sections.includes(s.value)}
                   onChange={() => toggleSection(s.value)}
                 />
-                {s.label}
+                {tr(s.label)}
               </label>
             ))}
           </div>
@@ -176,14 +176,14 @@ export default function AddProjectMemberForm({
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Toevoegen"}
+          {loading ? tr("Bezig...") : tr("Toevoegen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

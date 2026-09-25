@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { useT } from "@/lib/i18n/client";
+import { useLang } from "@/lib/i18n/client";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 type MyTask = {
   id: string;
@@ -16,6 +19,8 @@ type MyTask = {
 
 export default function MyTasksList({ tasks }: { tasks: MyTask[] }) {
   const supabase = createClient();
+  const tr = useT();
+  const dateLocale = DATE_LOCALE[useLang()];
   const router = useRouter();
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -29,8 +34,7 @@ export default function MyTasksList({ tasks }: { tasks: MyTask[] }) {
   if (tasks.length === 0) {
     return (
       <p className="text-sm text-ink/40">
-        Nog geen taken aan jou toegewezen. Wijs jezelf toe bij het aanmaken
-        of bewerken van een taak.
+        {tr("Nog geen taken aan jou toegewezen. Wijs jezelf toe bij het aanmaken of bewerken van een taak.")}
       </p>
     );
   }
@@ -45,7 +49,7 @@ export default function MyTasksList({ tasks }: { tasks: MyTask[] }) {
           <button
             onClick={() => markDone(t.id)}
             disabled={busyId === t.id}
-            title="Markeer als klaar"
+            title={tr("Markeer als klaar")}
             className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-ink/20 text-transparent transition hover:border-teal hover:text-teal disabled:opacity-50"
           >
             ✓
@@ -65,12 +69,12 @@ export default function MyTasksList({ tasks }: { tasks: MyTask[] }) {
           </div>
           {t.urgency === "urgent" && (
             <span className="shrink-0 rounded-full bg-brick-soft px-2 py-0.5 text-xs font-medium text-brick">
-              Urgent
+              {tr("Urgent")}
             </span>
           )}
           {t.due_date && (
             <span className="shrink-0 text-xs font-medium text-ink/50">
-              {new Date(t.due_date).toLocaleDateString("nl-NL")}
+              {new Date(t.due_date).toLocaleDateString(dateLocale)}
             </span>
           )}
         </li>

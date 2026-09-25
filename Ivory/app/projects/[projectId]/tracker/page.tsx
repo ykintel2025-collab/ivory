@@ -3,6 +3,9 @@ import Badge from "@/components/Badge";
 import AddRegistrationForm from "@/components/AddRegistrationForm";
 import DeleteButton from "@/components/DeleteButton";
 import EditModal from "@/components/EditModal";
+import { getT } from "@/lib/i18n/server";
+import { getLang } from "@/lib/i18n/server";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +15,8 @@ export default async function TrackerPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
+  const dateLocale = DATE_LOCALE[getLang()];
   const projectId = params.projectId;
 
   const [{ data: registrations }, { data: members }] = await Promise.all([
@@ -28,18 +33,17 @@ export default async function TrackerPage({
 
   const memberList = (members ?? []).map((m: any) => ({
     user_id: m.user_id,
-    full_name: m.profiles?.full_name ?? "Onbekend",
+    full_name: m.profiles?.full_name ?? tr("Onbekend"),
   }));
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl text-ink">
-          Registratietracker
+          {tr("Registratietracker")}
         </h1>
         <p className="text-sm text-ink/50">
-          Registratiestatus per apparaat (bv. MDMA/MOHAP) — Klasse II/III kan
-          tot 12 maanden duren
+          {tr("Registratiestatus per apparaat (bv. MDMA/MOHAP) — Klasse II/III kan tot 12 maanden duren")}
         </p>
       </div>
 
@@ -49,11 +53,11 @@ export default async function TrackerPage({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-ivory-line bg-ivory text-xs uppercase tracking-wide text-ink/50">
             <tr>
-              <th className="px-4 py-3">Item</th>
-              <th className="px-4 py-3">Klasse</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Verwacht klaar</th>
-              <th className="px-4 py-3">Eigenaar</th>
+              <th className="px-4 py-3">{tr("Item")}</th>
+              <th className="px-4 py-3">{tr("Klasse")}</th>
+              <th className="px-4 py-3">{tr("Status")}</th>
+              <th className="px-4 py-3">{tr("Verwacht klaar")}</th>
+              <th className="px-4 py-3">{tr("Eigenaar")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -71,7 +75,7 @@ export default async function TrackerPage({
                 </td>
                 <td className="px-4 py-3 text-ink/50">
                   {r.expected_completion
-                    ? new Date(r.expected_completion).toLocaleDateString("nl-NL")
+                    ? new Date(r.expected_completion).toLocaleDateString(dateLocale)
                     : "—"}
                 </td>
                 <td className="px-4 py-3 text-ink/50">
@@ -82,7 +86,7 @@ export default async function TrackerPage({
                     <EditModal
                       table="registrations"
                       id={r.id}
-                      title="Registratie bewerken"
+                      title={tr("Registratie bewerken")}
                       initialValues={{
                         item_name: r.item_name,
                         device_class: r.device_class,
@@ -92,34 +96,34 @@ export default async function TrackerPage({
                         notes: r.notes,
                       }}
                       fields={[
-                        { key: "item_name", label: "Item / apparaat", type: "text" },
-                        { key: "device_class", label: "Klasse", type: "text" },
+                        { key: "item_name", label: tr("Item / apparaat"), type: "text" },
+                        { key: "device_class", label: tr("Klasse"), type: "text" },
                         {
                           key: "registration_status",
-                          label: "Status",
+                          label: tr("Status"),
                           type: "select",
                           options: [
-                            { value: "niet_gestart", label: "Niet gestart" },
-                            { value: "in_aanvraag", label: "In aanvraag" },
-                            { value: "ingediend", label: "Ingediend" },
-                            { value: "goedgekeurd", label: "Goedgekeurd" },
-                            { value: "afgewezen", label: "Afgewezen" },
+                            { value: "niet_gestart", label: tr("Niet gestart") },
+                            { value: "in_aanvraag", label: tr("In aanvraag") },
+                            { value: "ingediend", label: tr("Ingediend") },
+                            { value: "goedgekeurd", label: tr("Goedgekeurd") },
+                            { value: "afgewezen", label: tr("Afgewezen") },
                           ],
                         },
-                        { key: "expected_completion", label: "Verwacht klaar", type: "date" },
+                        { key: "expected_completion", label: tr("Verwacht klaar"), type: "date" },
                         {
                           key: "owner_id",
-                          label: "Eigenaar",
+                          label: tr("Eigenaar"),
                           type: "select",
                           options: [
-                            { value: "", label: "Niemand" },
+                            { value: "", label: tr("Niemand") },
                             ...memberList.map((m) => ({
                               value: m.user_id,
                               label: m.full_name,
                             })),
                           ],
                         },
-                        { key: "notes", label: "Notities", type: "textarea" },
+                        { key: "notes", label: tr("Notities"), type: "textarea" },
                       ]}
                     />
                     <DeleteButton table="registrations" id={r.id} />
@@ -130,7 +134,7 @@ export default async function TrackerPage({
             {(registrations ?? []).length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center text-ink/40">
-                  Nog geen registraties toegevoegd.
+                  {tr("Nog geen registraties toegevoegd.")}
                 </td>
               </tr>
             )}

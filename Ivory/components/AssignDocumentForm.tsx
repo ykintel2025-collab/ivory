@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 type Project = { id: string; name: string };
 
@@ -16,6 +17,7 @@ export default function AssignDocumentForm({
   projects: Project[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [projectId, setProjectId] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function AssignDocumentForm({
       .move(storagePath, newPath);
 
     if (moveError) {
-      setError("Verplaatsen mislukt: " + moveError.message);
+      setError(tr("Verplaatsen mislukt: ") + moveError.message);
       setLoading(false);
       return;
     }
@@ -46,7 +48,7 @@ export default function AssignDocumentForm({
 
     setLoading(false);
     if (updateError) {
-      setError("Bijwerken mislukt: " + updateError.message);
+      setError(tr("Bijwerken mislukt: ") + updateError.message);
       return;
     }
     router.refresh();
@@ -59,7 +61,7 @@ export default function AssignDocumentForm({
         onChange={(e) => setProjectId(e.target.value)}
         className="rounded-md border border-ivory-line bg-ivory-card px-2 py-1 text-xs text-ink focus:border-ink focus:outline-none"
       >
-        <option value="">Toewijzen aan...</option>
+        <option value="">{tr("Toewijzen aan...")}</option>
         {projects.map((p) => (
           <option key={p.id} value={p.id}>
             {p.name}

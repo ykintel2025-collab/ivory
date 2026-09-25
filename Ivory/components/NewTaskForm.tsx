@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 type Member = { user_id: string; full_name: string };
 type Phase = { id: number; number: number; name: string };
@@ -17,6 +18,7 @@ export default function NewTaskForm({
   phases: Phase[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -47,7 +49,7 @@ export default function NewTaskForm({
     setLoading(false);
 
     if (insertError) {
-      setError("Aanmaken mislukt: " + insertError.message);
+      setError(tr("Aanmaken mislukt: ") + insertError.message);
       return;
     }
 
@@ -66,7 +68,7 @@ export default function NewTaskForm({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Nieuwe taak
+        {tr("+ Nieuwe taak")}
       </button>
     );
   }
@@ -76,24 +78,24 @@ export default function NewTaskForm({
       onSubmit={handleCreate}
       className="w-full space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuwe taak</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuwe taak")}</h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Titel
+          {tr("Titel")}
         </label>
         <input
           required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
-          placeholder="bijv. Bouwprogramma opvragen bij QHC"
+          placeholder={tr("bijv. Bouwprogramma opvragen bij QHC")}
         />
       </div>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Omschrijving (optioneel)
+          {tr("Omschrijving (optioneel)")}
         </label>
         <textarea
           value={description}
@@ -106,14 +108,14 @@ export default function NewTaskForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Toegewezen aan
+            {tr("Toegewezen aan")}
           </label>
           <select
             value={ownerId}
             onChange={(e) => setOwnerId(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="">Niemand</option>
+            <option value="">{tr("Niemand")}</option>
             {members.map((m) => (
               <option key={m.user_id} value={m.user_id}>
                 {m.full_name}
@@ -124,7 +126,7 @@ export default function NewTaskForm({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Fase
+            {tr("Fase")}
           </label>
           <select
             value={phaseId}
@@ -133,7 +135,7 @@ export default function NewTaskForm({
           >
             {phases.map((p) => (
               <option key={p.id} value={p.id}>
-                Fase {p.number} — {p.name}
+                {tr("Fase")} {p.number} — {tr(p.name)}
               </option>
             ))}
           </select>
@@ -141,22 +143,22 @@ export default function NewTaskForm({
 
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Urgentie
+            {tr("Urgentie")}
           </label>
           <select
             value={urgency}
             onChange={(e) => setUrgency(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="normaal">Normaal</option>
-            <option value="hoog">Hoog</option>
-            <option value="urgent">Urgent</option>
+            <option value="normaal">{tr("Normaal")}</option>
+            <option value="hoog">{tr("Hoog")}</option>
+            <option value="urgent">{tr("Urgent")}</option>
           </select>
         </div>
 
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Deadline (optioneel)
+            {tr("Deadline (optioneel)")}
           </label>
           <input
             type="date"
@@ -179,14 +181,14 @@ export default function NewTaskForm({
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Taak aanmaken"}
+          {loading ? tr("Bezig...") : tr("Taak aanmaken")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

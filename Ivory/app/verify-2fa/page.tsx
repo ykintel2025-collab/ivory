@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Image from "next/image";
+import { useT } from "@/lib/i18n/client";
 
 export default function Verify2FAPage() {
   const supabase = createClient();
   const router = useRouter();
+  const tr = useT();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ export default function Verify2FAPage() {
     });
 
     if (challengeError || !challenge) {
-      setError("Er ging iets mis. Probeer het opnieuw.");
+      setError(tr("Er ging iets mis. Probeer het opnieuw."));
       setLoading(false);
       return;
     }
@@ -55,7 +57,7 @@ export default function Verify2FAPage() {
 
     setLoading(false);
     if (verifyError) {
-      setError("Code onjuist. Controleer je authenticator-app en probeer opnieuw.");
+      setError(tr("Code onjuist. Controleer je authenticator-app en probeer opnieuw."));
       return;
     }
 
@@ -72,7 +74,7 @@ export default function Verify2FAPage() {
   if (checking) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ivory">
-        <p className="text-sm text-ink/40">Bezig...</p>
+        <p className="text-sm text-ink/40">{tr("Bezig...")}</p>
       </div>
     );
   }
@@ -90,10 +92,10 @@ export default function Verify2FAPage() {
           />
         </div>
         <h1 className="mb-1 text-center font-display text-xl text-ink">
-          Verificatiecode
+          {tr("Verificatiecode")}
         </h1>
         <p className="mb-5 text-center text-sm text-ink/50">
-          Voer de 6-cijferige code in uit je authenticator-app
+          {tr("Voer de 6-cijferige code in uit je authenticator-app")}
         </p>
         <form onSubmit={handleVerify} className="space-y-3">
           <input
@@ -116,14 +118,14 @@ export default function Verify2FAPage() {
             disabled={loading || !factorId || code.length !== 6}
             className="w-full rounded-lg bg-ink px-3 py-2.5 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
           >
-            {loading ? "Bezig..." : "Bevestigen"}
+            {loading ? tr("Bezig...") : tr("Bevestigen")}
           </button>
         </form>
         <button
           onClick={handleLogout}
           className="mt-4 w-full text-center text-xs text-ink/40 hover:text-ink/60"
         >
-          Uitloggen en met een ander account proberen
+          {tr("Uitloggen en met een ander account proberen")}
         </button>
       </div>
     </div>

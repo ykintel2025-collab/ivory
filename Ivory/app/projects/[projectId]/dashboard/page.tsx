@@ -4,6 +4,9 @@ import Badge from "@/components/Badge";
 import EditModal from "@/components/EditModal";
 import Link from "next/link";
 import Image from "next/image";
+import { getT } from "@/lib/i18n/server";
+import { getLang } from "@/lib/i18n/server";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +16,8 @@ export default async function DashboardPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
+  const dateLocale = DATE_LOCALE[getLang()];
   const projectId = params.projectId;
 
   const {
@@ -104,13 +109,13 @@ export default async function DashboardPage({
   const upcomingDeadlines = [
     ...(tasks ?? [])
       .filter((t) => t.due_date && t.status !== "klaar")
-      .map((t) => ({ label: t.title, date: t.due_date, type: "Taak" })),
+      .map((t) => ({ label: t.title, date: t.due_date, type: tr("Taak") })),
     ...(registrations ?? [])
       .filter((r) => r.expected_completion && r.registration_status !== "goedgekeurd")
       .map((r) => ({
         label: r.item_name,
         date: r.expected_completion,
-        type: "Registratie",
+        type: tr("Registratie"),
       })),
   ]
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
@@ -130,7 +135,7 @@ export default async function DashboardPage({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-display text-2xl text-ink">
-                {project?.name ?? "Project"}
+                {project?.name ?? tr("Project")}
               </h1>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${
@@ -141,12 +146,12 @@ export default async function DashboardPage({
                     : "bg-ink/5 text-ink/50"
                 }`}
               >
-                {project?.status ?? "actief"}
+                {tr(project?.status ?? "actief")}
               </span>
               <EditModal
                 table="projects"
                 id={projectId}
-                title="Project bewerken"
+                title={tr("Project bewerken")}
                 initialValues={{
                   name: project?.name,
                   client: project?.client,
@@ -154,17 +159,17 @@ export default async function DashboardPage({
                   status: project?.status,
                 }}
                 fields={[
-                  { key: "name", label: "Projectnaam", type: "text" },
-                  { key: "client", label: "Opdrachtgever", type: "text" },
-                  { key: "location", label: "Locatie", type: "text" },
+                  { key: "name", label: tr("Projectnaam"), type: "text" },
+                  { key: "client", label: tr("Opdrachtgever"), type: "text" },
+                  { key: "location", label: tr("Locatie"), type: "text" },
                   {
                     key: "status",
-                    label: "Status",
+                    label: tr("Status"),
                     type: "select",
                     options: [
-                      { value: "actief", label: "Actief" },
-                      { value: "gepauzeerd", label: "Gepauzeerd" },
-                      { value: "afgerond", label: "Afgerond" },
+                      { value: "actief", label: tr("Actief") },
+                      { value: "gepauzeerd", label: tr("Gepauzeerd") },
+                      { value: "afgerond", label: tr("Afgerond") },
                     ],
                   },
                 ]}
@@ -182,24 +187,24 @@ export default async function DashboardPage({
         className="flex items-center justify-between rounded-xl border border-ivory-line bg-ivory-card px-6 py-3 text-sm shadow-sm transition hover:border-gold"
       >
         <span className="text-ink/60">
-          Team: {visibleMembers.length} {visibleMembers.length === 1 ? "lid" : "leden"}
+          {tr("Team")}: {visibleMembers.length} {visibleMembers.length === 1 ? tr("lid") : tr("leden")}
         </span>
-        <span className="text-xs font-medium text-ink/40">Beheren in Instellingen →</span>
+        <span className="text-xs font-medium text-ink/40">{tr("Beheren in Instellingen →")}</span>
       </Link>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
-          label="Open hoge risico's"
+          label={tr("Open hoge risico's")}
           value={riskCounts.hoog}
           tone={riskCounts.hoog > 0 ? "danger" : "success"}
         />
         <StatCard
-          label="Geblokkeerd (wacht op extern)"
+          label={tr("Geblokkeerd (wacht op extern)")}
           value={blockedCount}
           tone={blockedCount > 0 ? "danger" : "success"}
         />
         <StatCard
-          label="Openstaande taken"
+          label={tr("Openstaande taken")}
           value={(tasks ?? []).filter((t) => t.status !== "klaar").length}
         />
       </div>
@@ -208,13 +213,13 @@ export default async function DashboardPage({
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-display text-lg text-ink">
-              Prioriteiten en taken
+              {tr("Prioriteiten en taken")}
             </h2>
             <Link
               href={`/projects/${projectId}/tasks`}
               className="text-xs font-medium text-ink/50 hover:underline"
             >
-              Alle taken →
+              {tr("Alle taken →")}
             </Link>
           </div>
           <div className="space-y-2">
@@ -240,7 +245,7 @@ export default async function DashboardPage({
                     <p className="truncate text-sm text-ink/80">{t.title}</p>
                     {t.due_date && (
                       <p className="text-xs text-ink/40">
-                        {new Date(t.due_date).toLocaleDateString("nl-NL")}
+                        {new Date(t.due_date).toLocaleDateString(dateLocale)}
                       </p>
                     )}
                   </div>
@@ -250,19 +255,19 @@ export default async function DashboardPage({
                 </Link>
               ))}
             {(tasks ?? []).filter((t) => t.status !== "klaar").length === 0 && (
-              <p className="text-sm text-ink/40">Geen openstaande taken. 👍</p>
+              <p className="text-sm text-ink/40">{tr("Geen openstaande taken. 👍")}</p>
             )}
           </div>
         </div>
 
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <h2 className="mb-1 font-display text-lg text-ink">
-            Budget voor dit project
+            {tr("Budget voor dit project")}
           </h2>
           {budgetRow ? (
             <>
               <p className="mb-4 text-xs text-ink/40">
-                Raming t.o.v. toegewezen budget
+                {tr("Raming t.o.v. toegewezen budget")}
               </p>
               <div className="mb-2 h-3 w-full overflow-hidden rounded-full bg-ivory">
                 <div
@@ -275,16 +280,16 @@ export default async function DashboardPage({
               <div className="flex items-center justify-between text-sm">
                 <span className="text-ink/70">
                   €{(budgetRow.estimate_low / 1e6).toFixed(1)}–
-                  {(budgetRow.estimate_high / 1e6).toFixed(1)}M raming
+                  {(budgetRow.estimate_high / 1e6).toFixed(1)}M {tr("raming")}
                 </span>
                 <span className="font-medium text-ink">
-                  {budgetPct}% van €{(budgetRow.allocation / 1e6).toFixed(1)}M
+                  {budgetPct}% {tr("van")} €{(budgetRow.allocation / 1e6).toFixed(1)}M
                 </span>
               </div>
             </>
           ) : (
             <p className="text-sm text-ink/40">
-              Nog geen budgetraming vastgelegd voor dit project.
+              {tr("Nog geen budgetraming vastgelegd voor dit project.")}
             </p>
           )}
         </div>
@@ -293,14 +298,14 @@ export default async function DashboardPage({
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <h2 className="mb-4 font-display text-lg text-ink">
-            Voortgang per fase
+            {tr("Voortgang per fase")}
           </h2>
           <div className="space-y-3">
             {phaseProgress.map((phase) => (
               <div key={phase.id}>
                 <div className="mb-1 flex items-center justify-between text-xs">
                   <span className="font-medium text-ink/80">
-                    Fase {phase.number} — {phase.name}
+                    {tr("Fase")} {phase.number} — {tr(phase.name)}
                   </span>
                   <span className="text-ink/40">
                     {phase.done}/{phase.total || 0}
@@ -323,10 +328,10 @@ export default async function DashboardPage({
 
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <h2 className="mb-4 font-display text-lg text-ink">
-            Eerstvolgende deadlines
+            {tr("Eerstvolgende deadlines")}
           </h2>
           {upcomingDeadlines.length === 0 ? (
-            <p className="text-sm text-ink/40">Geen deadlines gevonden.</p>
+            <p className="text-sm text-ink/40">{tr("Geen deadlines gevonden.")}</p>
           ) : (
             <ul className="space-y-3">
               {upcomingDeadlines.map((d, i) => (
@@ -336,7 +341,7 @@ export default async function DashboardPage({
                     <p className="text-xs text-ink/40">{d.type}</p>
                   </div>
                   <span className="text-xs font-medium text-ink/50">
-                    {new Date(d.date).toLocaleDateString("nl-NL")}
+                    {new Date(d.date).toLocaleDateString(dateLocale)}
                   </span>
                 </li>
               ))}
@@ -348,13 +353,13 @@ export default async function DashboardPage({
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg text-ink">
-            Openstaande hoge risico's
+            {tr("Openstaande hoge risico's")}
           </h2>
           <Link
             href={`/projects/${projectId}/risks`}
             className="text-xs font-medium text-ink/50 hover:underline"
           >
-            Alle risico's →
+            {tr("Alle risico's →")}
           </Link>
         </div>
         <div className="space-y-2">
@@ -372,31 +377,31 @@ export default async function DashboardPage({
             ))}
           {(risks ?? []).filter((r) => r.rating === "hoog" && r.status === "open")
             .length === 0 && (
-            <p className="text-sm text-ink/40">Geen open hoge risico's.</p>
+            <p className="text-sm text-ink/40">{tr("Geen open hoge risico's.")}</p>
           )}
         </div>
       </div>
 
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-        <h2 className="mb-4 font-display text-lg text-ink">Activiteit</h2>
+        <h2 className="mb-4 font-display text-lg text-ink">{tr("Activiteit")}</h2>
         <div className="space-y-2">
           {(activityLog ?? []).map((a: any) => (
             <div key={a.id} className="flex items-start gap-2 text-sm">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
               <p className="text-ink/70">
                 <span className="font-medium text-ink">
-                  {a.profiles?.full_name ?? "Iemand"}
+                  {a.profiles?.full_name ?? tr("Iemand")}
                 </span>{" "}
-                {a.action} {a.entity_type} "{a.entity_label}"
+                {tr(a.action)} {tr(a.entity_type)} "{a.entity_label}"
                 {a.detail ? ` (${a.detail})` : ""}
                 <span className="ml-1 text-xs text-ink/40">
-                  · {new Date(a.created_at).toLocaleString("nl-NL", { dateStyle: "short", timeStyle: "short" })}
+                  · {new Date(a.created_at).toLocaleString(dateLocale, { dateStyle: "short", timeStyle: "short" })}
                 </span>
               </p>
             </div>
           ))}
           {(activityLog ?? []).length === 0 && (
-            <p className="text-sm text-ink/40">Nog geen activiteit geregistreerd.</p>
+            <p className="text-sm text-ink/40">{tr("Nog geen activiteit geregistreerd.")}</p>
           )}
         </div>
       </div>

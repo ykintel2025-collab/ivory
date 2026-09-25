@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { useT } from "@/lib/i18n/client";
 
 const COLORS: Record<string, string> = {
   Hoog: "#8B3A3A",
@@ -24,11 +25,12 @@ export default function RiskDonutChart({
   ].filter((d) => d.value > 0);
 
   const total = hoog + midden + laag;
+const tr = useT();
 
   if (total === 0) {
     return (
       <div className="flex h-40 items-center justify-center text-sm text-ink/40">
-        Nog geen risico's geregistreerd.
+        {tr("Nog geen risico's geregistreerd.")}
       </div>
     );
   }
@@ -76,7 +78,7 @@ export default function RiskDonutChart({
               className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: item.color }}
             />
-            <span className="text-ink/70">{item.label}</span>
+            <span className="text-ink/70">{tr(item.label)}</span>
             <span className="font-medium text-ink">{item.value}</span>
           </div>
         ))}

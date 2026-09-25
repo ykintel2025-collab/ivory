@@ -4,6 +4,9 @@ import AddNewContactForm from "@/components/AddNewContactForm";
 import AssignContactForm from "@/components/AssignContactForm";
 import AddCommunicationLogForm from "@/components/AddCommunicationLogForm";
 import EditModal from "@/components/EditModal";
+import { getT } from "@/lib/i18n/server";
+import { getLang } from "@/lib/i18n/server";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +16,8 @@ export default async function PartiesPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
+  const dateLocale = DATE_LOCALE[getLang()];
   const projectId = params.projectId;
 
   const [
@@ -51,17 +56,17 @@ export default async function PartiesPage({
     <div className="space-y-8">
       <div>
         <h1 className="font-display text-2xl text-ink">
-          Partijen & Communicatie
+          {tr("Partijen & Communicatie")}
         </h1>
         <p className="text-sm text-ink/50">
-          Dossiers, communicatielog en openstaande externe blokkades
+          {tr("Dossiers, communicatielog en openstaande externe blokkades")}
         </p>
       </div>
 
       {/* Wachten-op-extern-bord */}
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
         <h2 className="mb-4 font-display text-lg text-ink">
-          Wachten op extern
+          {tr("Wachten op extern")}
         </h2>
         <div className="space-y-2">
           {(blockers ?? [])
@@ -74,19 +79,19 @@ export default async function PartiesPage({
                 <div>
                   <p className="text-sm font-medium text-ink">{b.title}</p>
                   <p className="text-xs text-ink/40">
-                    Wacht op: {b.contacts?.name ?? "onbekend"}
+                    {tr("Wacht op")}: {b.contacts?.name ?? tr("onbekend")}
                     {b.reference && ` · ${b.reference}`}
                   </p>
                 </div>
                 <span className="rounded-full bg-brick-soft px-2.5 py-0.5 text-xs font-medium text-brick">
-                  Open
+                  {tr("Open")}
                 </span>
               </div>
             ))}
           {(blockers ?? []).filter((b: any) => b.status === "open").length ===
             0 && (
             <p className="text-sm text-ink/40">
-              Geen openstaande externe blokkades.
+              {tr("Geen openstaande externe blokkades.")}
             </p>
           )}
         </div>
@@ -96,7 +101,7 @@ export default async function PartiesPage({
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-lg text-ink">
-            Partijen in dit project
+            {tr("Partijen in dit project")}
           </h2>
           <div className="flex flex-wrap gap-2">
             <AssignContactForm
@@ -116,31 +121,31 @@ export default async function PartiesPage({
                 <EditModal
                   table="project_contacts"
                   id={pc.id}
-                  title={`${pc.contacts?.name} — rol in dit project`}
+                  title={tr("{naam} — rol in dit project", { naam: pc.contacts?.name ?? "" })}
                   initialValues={{
                     role: pc.role,
                     status: pc.status,
                     notes: pc.notes,
                   }}
                   fields={[
-                    { key: "role", label: "Rol in dit project", type: "text" },
+                    { key: "role", label: tr("Rol in dit project"), type: "text" },
                     {
                       key: "status",
-                      label: "Status",
+                      label: tr("Status"),
                       type: "select",
                       options: [
-                        { value: "actief", label: "Actief" },
-                        { value: "in gesprek", label: "In gesprek" },
-                        { value: "inactief", label: "Inactief" },
+                        { value: "actief", label: tr("Actief") },
+                        { value: "in gesprek", label: tr("In gesprek") },
+                        { value: "inactief", label: tr("Inactief") },
                       ],
                     },
-                    { key: "notes", label: "Notities", type: "textarea" },
+                    { key: "notes", label: tr("Notities"), type: "textarea" },
                   ]}
                 />
                 <DeleteButton
                   table="project_contacts"
                   id={pc.id}
-                  confirmText={`${pc.contacts?.name} loskoppelen van dit project? De relatie zelf blijft bestaan.`}
+                  confirmText={tr("{naam} loskoppelen van dit project? De relatie zelf blijft bestaan.", { naam: pc.contacts?.name ?? "" })}
                 />
               </div>
               <div className="mb-1 flex items-center gap-2 pr-12">
@@ -156,11 +161,11 @@ export default async function PartiesPage({
                       : "bg-ink/5 text-ink/50"
                   }`}
                 >
-                  {pc.status}
+                  {tr(pc.status)}
                 </span>
               </div>
               <p className="text-xs text-ink/50">
-                {pc.role || pc.contacts?.type || "Geen rol opgegeven"}
+                {pc.role || pc.contacts?.type || tr("Geen rol opgegeven")}
               </p>
               {pc.contacts?.contact_name && (
                 <p className="mt-1 text-xs text-ink/40">
@@ -197,7 +202,7 @@ export default async function PartiesPage({
           ))}
           {(projectContacts ?? []).length === 0 && (
             <p className="text-sm text-ink/40">
-              Nog geen partijen aan dit project gekoppeld.
+              {tr("Nog geen partijen aan dit project gekoppeld.")}
             </p>
           )}
         </div>
@@ -207,7 +212,7 @@ export default async function PartiesPage({
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-display text-lg text-ink">
-            Recente communicatie
+            {tr("Recente communicatie")}
           </h2>
         </div>
         <div className="mb-4">
@@ -215,7 +220,7 @@ export default async function PartiesPage({
             projectId={projectId}
             contacts={(projectContacts ?? []).map((pc: any) => ({
               contact_id: pc.contact_id,
-              name: pc.contacts?.name ?? "Onbekend",
+              name: pc.contacts?.name ?? tr("Onbekend"),
             }))}
           />
         </div>
@@ -226,21 +231,21 @@ export default async function PartiesPage({
               className="border-b border-ivory-line pb-3 last:border-0"
             >
               <div className="mb-1 flex items-center justify-between text-xs text-ink/40">
-                <span>{log.contacts?.name ?? "Onbekende partij"}</span>
+                <span>{log.contacts?.name ?? tr("Onbekende partij")}</span>
                 <span>
-                  {new Date(log.contact_date).toLocaleDateString("nl-NL")}
+                  {new Date(log.contact_date).toLocaleDateString(dateLocale)}
                 </span>
               </div>
               <p className="text-sm text-ink/80">{log.summary}</p>
               {log.follow_up && (
                 <p className="mt-1 text-xs text-ink/50">
-                  Vervolgactie: {log.follow_up}
+                  {tr("Vervolgactie")}: {log.follow_up}
                 </p>
               )}
             </div>
           ))}
           {(logs ?? []).length === 0 && (
-            <p className="text-sm text-ink/40">Nog geen communicatie gelogd.</p>
+            <p className="text-sm text-ink/40">{tr("Nog geen communicatie gelogd.")}</p>
           )}
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 type Contact = { contact_id: string; name: string };
 
@@ -14,6 +15,7 @@ export default function AddCommunicationLogForm({
   contacts: Contact[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [contactId, setContactId] = useState("");
@@ -45,7 +47,7 @@ export default function AddCommunicationLogForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Opslaan mislukt: " + insertError.message);
+      setError(tr("Opslaan mislukt: ") + insertError.message);
       return;
     }
 
@@ -62,7 +64,7 @@ export default function AddCommunicationLogForm({
         onClick={() => setOpen(true)}
         className="rounded-lg border border-ivory-line bg-ivory-card px-4 py-2 text-sm font-medium text-ink hover:border-gold"
       >
-        + Contactmoment loggen
+        {tr("+ Contactmoment loggen")}
       </button>
     );
   }
@@ -72,19 +74,19 @@ export default function AddCommunicationLogForm({
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Contactmoment loggen</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Contactmoment loggen")}</h2>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Partij
+            {tr("Partij")}
           </label>
           <select
             value={contactId}
             onChange={(e) => setContactId(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="">Kies een partij...</option>
+            <option value="">{tr("Kies een partij...")}</option>
             {contacts.map((c) => (
               <option key={c.contact_id} value={c.contact_id}>
                 {c.name}
@@ -94,7 +96,7 @@ export default function AddCommunicationLogForm({
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Datum
+            {tr("Datum")}
           </label>
           <input
             type="date"
@@ -108,7 +110,7 @@ export default function AddCommunicationLogForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Samenvatting (bv. "Telefonisch overleg over betaalschema")
+          {tr("Samenvatting (bv. \"Telefonisch overleg over betaalschema\")")}
         </label>
         <textarea
           required
@@ -121,7 +123,7 @@ export default function AddCommunicationLogForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Vervolgactie (optioneel)
+          {tr("Vervolgactie (optioneel)")}
         </label>
         <input
           value={followUp}
@@ -142,14 +144,14 @@ export default function AddCommunicationLogForm({
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Opslaan"}
+          {loading ? tr("Bezig...") : tr("Opslaan")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

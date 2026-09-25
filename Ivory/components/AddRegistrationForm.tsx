@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 type Member = { user_id: string; full_name: string };
 
@@ -14,6 +15,7 @@ export default function AddRegistrationForm({
   members: Member[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
@@ -42,7 +44,7 @@ export default function AddRegistrationForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Aanmaken mislukt: " + insertError.message);
+      setError(tr("Aanmaken mislukt: ") + insertError.message);
       return;
     }
 
@@ -62,7 +64,7 @@ export default function AddRegistrationForm({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Registratie toevoegen
+        {tr("+ Registratie toevoegen")}
       </button>
     );
   }
@@ -72,11 +74,11 @@ export default function AddRegistrationForm({
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuwe registratie</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuwe registratie")}</h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Item / apparaat
+          {tr("Item / apparaat")}
         </label>
         <input
           required
@@ -89,34 +91,34 @@ export default function AddRegistrationForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Klasse
+            {tr("Klasse")}
           </label>
           <input
             value={deviceClass}
             onChange={(e) => setDeviceClass(e.target.value)}
-            placeholder="bv. Klasse III"
+            placeholder={tr("bv. Klasse III")}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Status
+            {tr("Status")}
           </label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="niet_gestart">Niet gestart</option>
-            <option value="in_aanvraag">In aanvraag</option>
-            <option value="ingediend">Ingediend</option>
-            <option value="goedgekeurd">Goedgekeurd</option>
-            <option value="afgewezen">Afgewezen</option>
+            <option value="niet_gestart">{tr("Niet gestart")}</option>
+            <option value="in_aanvraag">{tr("In aanvraag")}</option>
+            <option value="ingediend">{tr("Ingediend")}</option>
+            <option value="goedgekeurd">{tr("Goedgekeurd")}</option>
+            <option value="afgewezen">{tr("Afgewezen")}</option>
           </select>
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Verwacht klaar
+            {tr("Verwacht klaar")}
           </label>
           <input
             type="date"
@@ -127,14 +129,14 @@ export default function AddRegistrationForm({
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Eigenaar
+            {tr("Eigenaar")}
           </label>
           <select
             value={ownerId}
             onChange={(e) => setOwnerId(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="">Niemand</option>
+            <option value="">{tr("Niemand")}</option>
             {members.map((m) => (
               <option key={m.user_id} value={m.user_id}>
                 {m.full_name}
@@ -146,7 +148,7 @@ export default function AddRegistrationForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Notities
+          {tr("Notities")}
         </label>
         <textarea
           value={notes}
@@ -168,14 +170,14 @@ export default function AddRegistrationForm({
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Toevoegen"}
+          {loading ? tr("Bezig...") : tr("Toevoegen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import GlobalShell from "@/components/GlobalShell";
+import { useT } from "@/lib/i18n/client";
 
 export default function SecurityPage() {
   const supabase = createClient();
+  const tr = useT();
   const [factors, setFactors] = useState<any[]>([]);
   const [enrolling, setEnrolling] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export default function SecurityPage() {
 
     const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
     if (error || !data) {
-      setError(error?.message ?? "Kon niet starten.");
+      setError(error?.message ?? tr("Kon niet starten."));
       return;
     }
     setFactorId(data.id);
@@ -60,7 +62,7 @@ export default function SecurityPage() {
       factorId,
     });
     if (challengeError || !challenge) {
-      setError(challengeError?.message ?? "Fout bij aanmaken verificatie.");
+      setError(challengeError?.message ?? tr("Fout bij aanmaken verificatie."));
       setLoading(false);
       return;
     }
@@ -73,7 +75,7 @@ export default function SecurityPage() {
 
     setLoading(false);
     if (verifyError) {
-      setError("Code onjuist. Controleer je app en probeer opnieuw.");
+      setError(tr("Code onjuist. Controleer je app en probeer opnieuw."));
       return;
     }
 
@@ -95,43 +97,40 @@ export default function SecurityPage() {
     <GlobalShell>
       <div className="max-w-lg space-y-6">
         <div>
-          <h1 className="font-display text-3xl text-ink">Beveiliging</h1>
+          <h1 className="font-display text-3xl text-ink">{tr("Beveiliging")}</h1>
           <p className="text-sm text-ink/50">
-            Tweestapsverificatie voor jouw account
+            {tr("Tweestapsverificatie voor jouw account")}
           </p>
         </div>
 
         {required && (
           <div className="rounded-xl border border-gold/40 bg-gold-soft p-4 text-sm text-ink">
-            Tweestapsverificatie is verplicht voor iedereen in Ivory Basecamp.
-            Stel het hieronder in om verder te gaan; daarna kom je direct in je
-            projecten.
+            {tr("Tweestapsverificatie is verplicht voor iedereen in Ivory Basecamp. Stel het hieronder in om verder te gaan; daarna kom je direct in je projecten.")}
           </div>
         )}
 
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           {!ready ? (
-            <p className="text-sm text-ink/40">Bezig...</p>
+            <p className="text-sm text-ink/40">{tr("Bezig...")}</p>
           ) : hasVerifiedFactor ? (
             <div className="space-y-3">
               <p className="text-sm font-medium text-teal">
-                ✓ Tweestapsverificatie is ingeschakeld
+                {tr("✓ Tweestapsverificatie is ingeschakeld")}
               </p>
               {verifiedFactors.map((f) => (
                 <div
                   key={f.id}
                   className="flex items-center justify-between rounded-lg border border-ivory-line px-3 py-2.5"
                 >
-                  <span className="text-sm text-ink">Authenticator-app</span>
-                  <span className="text-xs text-ink/40">Verplicht</span>
+                  <span className="text-sm text-ink">{tr("Authenticator-app")}</span>
+                  <span className="text-xs text-ink/40">{tr("Verplicht")}</span>
                 </div>
               ))}
             </div>
           ) : enrolling ? (
             <form onSubmit={confirmEnroll} className="space-y-4">
               <p className="text-sm text-ink/70">
-                Scan deze QR-code met je authenticator-app (Google
-                Authenticator, Microsoft Authenticator, of Authy):
+                {tr("Scan deze QR-code met je authenticator-app (Google Authenticator, Microsoft Authenticator, of Authy):")}
               </p>
               {qrCode && (
                 <div className="flex justify-center rounded-lg bg-white p-4">
@@ -141,7 +140,7 @@ export default function SecurityPage() {
               )}
               <details className="text-xs text-ink/50">
                 <summary className="cursor-pointer">
-                  Kan niet scannen? Voer handmatig in
+                  {tr("Kan niet scannen? Voer handmatig in")}
                 </summary>
                 <p className="mt-1 break-all rounded bg-ivory p-2 font-mono">
                   {secret}
@@ -149,7 +148,7 @@ export default function SecurityPage() {
               </details>
               <div>
                 <label className="mb-1 block text-xs font-medium text-ink/60">
-                  Voer de 6-cijferige code in die je app nu toont
+                  {tr("Voer de 6-cijferige code in die je app nu toont")}
                 </label>
                 <input
                   required
@@ -172,7 +171,7 @@ export default function SecurityPage() {
                   disabled={loading || code.length !== 6}
                   className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
                 >
-                  {loading ? "Bezig..." : "Bevestigen"}
+                  {loading ? tr("Bezig...") : tr("Bevestigen")}
                 </button>
                 <button
                   type="button"
@@ -184,21 +183,20 @@ export default function SecurityPage() {
                   }}
                   className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
                 >
-                  Annuleren
+                  {tr("Annuleren")}
                 </button>
               </div>
             </form>
           ) : (
             <div>
               <p className="mb-3 text-sm text-ink/60">
-                Tweestapsverificatie staat nog uit. Zonder dit kan iedereen
-                met alleen je wachtwoord inloggen.
+                {tr("Tweestapsverificatie staat nog uit. Zonder dit kan iedereen met alleen je wachtwoord inloggen.")}
               </p>
               <button
                 onClick={startEnroll}
                 className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
               >
-                Tweestapsverificatie inschakelen
+                {tr("Tweestapsverificatie inschakelen")}
               </button>
               {error && (
                 <p className="mt-2 rounded-lg bg-brick-soft px-3 py-2 text-xs text-brick">

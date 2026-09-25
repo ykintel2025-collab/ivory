@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import Badge from "@/components/Badge";
 import DeleteButton from "@/components/DeleteButton";
 import EditModal from "@/components/EditModal";
+import { useT } from "@/lib/i18n/client";
+import { useLang } from "@/lib/i18n/client";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 type Task = {
   id: string;
@@ -42,6 +45,8 @@ export default function KanbanBoard({
   projectId: string;
 }) {
   const supabase = createClient();
+  const tr = useT();
+  const dateLocale = DATE_LOCALE[useLang()];
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
@@ -62,7 +67,7 @@ export default function KanbanBoard({
     <div className="space-y-3">
       {moveError && (
         <p className="rounded-lg bg-brick-soft px-3 py-2 text-sm text-brick">
-          Verplaatsen mislukt: {moveError}
+          {tr("Verplaatsen mislukt")}: {moveError}
         </p>
       )}
       <div className="grid gap-4 md:grid-cols-3">
@@ -74,7 +79,7 @@ export default function KanbanBoard({
             className="rounded-xl border border-ivory-line bg-ivory-card p-4 shadow-sm"
           >
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-display text-lg text-ink">{col.label}</h2>
+              <h2 className="font-display text-lg text-ink">{tr(col.label)}</h2>
               <span className="text-xs text-ink/40">{colTasks.length}</span>
             </div>
             <div className="space-y-3">
@@ -92,7 +97,7 @@ export default function KanbanBoard({
                       <EditModal
                         table="tasks"
                         id={task.id}
-                        title="Taak bewerken"
+                        title={tr("Taak bewerken")}
                         initialValues={{
                           title: task.title,
                           description: task.description,
@@ -102,25 +107,25 @@ export default function KanbanBoard({
                           phase_id: task.phase_id ? String(task.phase_id) : "",
                         }}
                         fields={[
-                          { key: "title", label: "Titel", type: "text" },
-                          { key: "description", label: "Omschrijving", type: "textarea" },
+                          { key: "title", label: tr("Titel"), type: "text" },
+                          { key: "description", label: tr("Omschrijving"), type: "textarea" },
                           {
                             key: "urgency",
-                            label: "Urgentie",
+                            label: tr("Urgentie"),
                             type: "select",
                             options: [
-                              { value: "normaal", label: "Normaal" },
-                              { value: "hoog", label: "Hoog" },
-                              { value: "urgent", label: "Urgent" },
+                              { value: "normaal", label: tr("Normaal") },
+                              { value: "hoog", label: tr("Hoog") },
+                              { value: "urgent", label: tr("Urgent") },
                             ],
                           },
-                          { key: "due_date", label: "Deadline", type: "date" },
+                          { key: "due_date", label: tr("Deadline"), type: "date" },
                           {
                             key: "owner_id",
-                            label: "Toegewezen aan",
+                            label: tr("Toegewezen aan"),
                             type: "select",
                             options: [
-                              { value: "", label: "Niemand" },
+                              { value: "", label: tr("Niemand") },
                               ...members.map((m) => ({
                                 value: m.user_id,
                                 label: m.full_name,
@@ -129,12 +134,12 @@ export default function KanbanBoard({
                           },
                           {
                             key: "phase_id",
-                            label: "Fase",
+                            label: tr("Fase"),
                             type: "select",
                             numeric: true,
                             options: phases.map((p) => ({
                               value: String(p.id),
-                              label: `Fase ${p.number} — ${p.name}`,
+                              label: `${tr("Fase")} ${p.number} — ${tr(p.name)}`,
                             })),
                           },
                         ]}
@@ -148,17 +153,17 @@ export default function KanbanBoard({
                     </p>
                   )}
                   <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-ink/40">
-                    {task.phases && <span>Fase {task.phases.number}</span>}
+                    {task.phases && <span>{tr("Fase")} {task.phases.number}</span>}
                     {task.profiles?.full_name && (
                       <span>· {task.profiles.full_name}</span>
                     )}
                     {task.due_date && (
                       <span>
-                        · {new Date(task.due_date).toLocaleDateString("nl-NL")}
+                        · {new Date(task.due_date).toLocaleDateString(dateLocale)}
                       </span>
                     )}
                     {task.blocked_by_id && (
-                      <span className="text-brick">· Geblokkeerd</span>
+                      <span className="text-brick">· {tr("Geblokkeerd")}</span>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -169,14 +174,14 @@ export default function KanbanBoard({
                         onClick={() => moveTask(task.id, c.key)}
                         className="rounded-md bg-ivory px-2 py-1 text-xs font-medium text-ink/70 hover:bg-ivory-line disabled:opacity-50"
                       >
-                        → {c.label}
+                        → {tr(c.label)}
                       </button>
                     ))}
                   </div>
                 </div>
               ))}
               {colTasks.length === 0 && (
-                <p className="text-xs text-ink/30">Geen taken</p>
+                <p className="text-xs text-ink/30">{tr("Geen taken")}</p>
               )}
             </div>
           </div>

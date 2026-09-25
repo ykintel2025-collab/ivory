@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 type Contact = { id: string; name: string; type: string | null };
 
@@ -15,6 +16,7 @@ export default function AssignContactForm({
   availableContacts: Contact[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [contactId, setContactId] = useState("");
@@ -37,7 +39,7 @@ export default function AssignContactForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Toewijzen mislukt: " + insertError.message);
+      setError(tr("Toewijzen mislukt: ") + insertError.message);
       return;
     }
 
@@ -59,7 +61,7 @@ export default function AssignContactForm({
         onClick={() => setOpen(true)}
         className="rounded-lg border border-ivory-line bg-ivory-card px-4 py-2 text-sm font-medium text-ink hover:border-gold"
       >
-        Bestaande relatie toewijzen
+        {tr("Bestaande relatie toewijzen")}
       </button>
     );
   }
@@ -70,12 +72,12 @@ export default function AssignContactForm({
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
       <h2 className="font-display text-lg text-ink">
-        Bestaande relatie toewijzen
+        {tr("Bestaande relatie toewijzen")}
       </h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Relatie
+          {tr("Relatie")}
         </label>
         <select
           required
@@ -83,7 +85,7 @@ export default function AssignContactForm({
           onChange={(e) => setContactId(e.target.value)}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         >
-          <option value="">Kies een relatie...</option>
+          <option value="">{tr("Kies een relatie...")}</option>
           {availableContacts.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -95,12 +97,12 @@ export default function AssignContactForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Rol in dit project
+          {tr("Rol in dit project")}
         </label>
         <input
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          placeholder="bv. Leverancier medische gassen"
+          placeholder={tr("bv. Leverancier medische gassen")}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         />
       </div>
@@ -117,14 +119,14 @@ export default function AssignContactForm({
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Toewijzen"}
+          {loading ? tr("Bezig...") : tr("Toewijzen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

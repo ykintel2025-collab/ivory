@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 export default function DeleteProjectButton({
   projectId,
@@ -13,6 +14,7 @@ export default function DeleteProjectButton({
   projectName: string;
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -30,7 +32,7 @@ export default function DeleteProjectButton({
 
     setLoading(false);
     if (deleteError) {
-      setError("Verwijderen mislukt: " + deleteError.message);
+      setError(tr("Verwijderen mislukt: ") + deleteError.message);
       return;
     }
     router.push("/projects");
@@ -45,7 +47,7 @@ export default function DeleteProjectButton({
         onClick={() => setOpen(true)}
         className="text-sm font-medium text-brick hover:underline"
       >
-        Project verwijderen
+        {tr("Project verwijderen")}
       </button>
     );
   }
@@ -53,15 +55,14 @@ export default function DeleteProjectButton({
   return (
     <div className="rounded-xl border border-brick/30 bg-brick-soft p-5">
       <h3 className="font-display text-base text-brick">
-        Project definitief verwijderen
+        {tr("Project definitief verwijderen")}
       </h3>
       <p className="mt-1 text-sm text-brick/80">
-        Dit verwijdert <strong>{projectName}</strong> inclusief alle risico's,
-        taken, scope, documenten en partij-koppelingen. Dit kan niet ongedaan
-        worden gemaakt.
+        {tr("Dit verwijdert")} <strong>{projectName}</strong>{" "}
+        {tr("inclusief alle risico's, taken, scope, documenten en partij-koppelingen. Dit kan niet ongedaan worden gemaakt.")}
       </p>
       <p className="mt-3 text-xs font-medium text-brick/70">
-        Typ de projectnaam ("{projectName}") om te bevestigen:
+        {tr("Typ de projectnaam (\"{naam}\") om te bevestigen:", { naam: projectName })}
       </p>
       <input
         value={confirmText}
@@ -75,7 +76,7 @@ export default function DeleteProjectButton({
           disabled={confirmText !== projectName || loading}
           className="rounded-lg bg-brick px-4 py-2 text-sm font-medium text-white hover:bg-brick/90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {loading ? "Bezig..." : "Definitief verwijderen"}
+          {loading ? tr("Bezig...") : tr("Definitief verwijderen")}
         </button>
         <button
           onClick={() => {
@@ -84,7 +85,7 @@ export default function DeleteProjectButton({
           }}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </div>

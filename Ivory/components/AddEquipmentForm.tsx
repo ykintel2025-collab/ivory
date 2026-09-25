@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 export default function AddEquipmentForm({ projectId }: { projectId: string }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [lineCode, setLineCode] = useState("");
@@ -36,7 +38,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
 
     setLoading(false);
     if (insertError) {
-      setError("Aanmaken mislukt: " + insertError.message);
+      setError(tr("Aanmaken mislukt: ") + insertError.message);
       return;
     }
 
@@ -57,7 +59,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Apparatuur toevoegen
+        {tr("+ Apparatuur toevoegen")}
       </button>
     );
   }
@@ -67,23 +69,23 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuw apparatuur-item</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuw apparatuur-item")}</h2>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Code (optioneel)
+            {tr("Code (optioneel)")}
           </label>
           <input
             value={lineCode}
             onChange={(e) => setLineCode(e.target.value)}
-            placeholder="bv. RD20162"
+            placeholder={tr("bv. RD20162")}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           />
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Afdeling
+            {tr("Afdeling")}
           </label>
           <input
             value={department}
@@ -95,7 +97,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Omschrijving
+          {tr("Omschrijving")}
         </label>
         <input
           required
@@ -108,7 +110,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Leverancier
+            {tr("Leverancier")}
           </label>
           <input
             value={supplier}
@@ -118,7 +120,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Model
+            {tr("Model")}
           </label>
           <input
             value={model}
@@ -128,7 +130,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Certificering
+            {tr("Certificering")}
           </label>
           <input
             value={certificationStatus}
@@ -138,7 +140,7 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Prijsindicatie (EUR)
+            {tr("Prijsindicatie (EUR)")}
           </label>
           <input
             type="number"
@@ -161,14 +163,14 @@ export default function AddEquipmentForm({ projectId }: { projectId: string }) {
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Toevoegen"}
+          {loading ? tr("Bezig...") : tr("Toevoegen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

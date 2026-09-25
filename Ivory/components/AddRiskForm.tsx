@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 type Member = { user_id: string; full_name: string };
 
@@ -14,6 +15,7 @@ export default function AddRiskForm({
   members: Member[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -41,7 +43,7 @@ export default function AddRiskForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Aanmaken mislukt: " + insertError.message);
+      setError(tr("Aanmaken mislukt: ") + insertError.message);
       return;
     }
 
@@ -60,7 +62,7 @@ export default function AddRiskForm({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Nieuw risico
+        {tr("+ Nieuw risico")}
       </button>
     );
   }
@@ -70,11 +72,11 @@ export default function AddRiskForm({
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuw risico</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuw risico")}</h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Titel
+          {tr("Titel")}
         </label>
         <input
           required
@@ -86,7 +88,7 @@ export default function AddRiskForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Omschrijving
+          {tr("Omschrijving")}
         </label>
         <textarea
           value={description}
@@ -99,28 +101,28 @@ export default function AddRiskForm({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Score
+            {tr("Score")}
           </label>
           <select
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="hoog">Hoog</option>
-            <option value="midden">Midden</option>
-            <option value="laag">Laag</option>
+            <option value="hoog">{tr("Hoog")}</option>
+            <option value="midden">{tr("Midden")}</option>
+            <option value="laag">{tr("Laag")}</option>
           </select>
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Eigenaar
+            {tr("Eigenaar")}
           </label>
           <select
             value={ownerId}
             onChange={(e) => setOwnerId(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="">Niemand</option>
+            <option value="">{tr("Niemand")}</option>
             {members.map((m) => (
               <option key={m.user_id} value={m.user_id}>
                 {m.full_name}
@@ -132,7 +134,7 @@ export default function AddRiskForm({
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Mitigatie
+          {tr("Mitigatie")}
         </label>
         <textarea
           value={mitigation}
@@ -154,14 +156,14 @@ export default function AddRiskForm({
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Risico toevoegen"}
+          {loading ? tr("Bezig...") : tr("Risico toevoegen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

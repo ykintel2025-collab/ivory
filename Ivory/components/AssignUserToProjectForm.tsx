@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 type Project = { id: string; name: string };
 
@@ -26,6 +27,7 @@ export default function AssignUserToProjectForm({
   availableProjects: Project[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [projectId, setProjectId] = useState("");
@@ -57,7 +59,7 @@ export default function AssignUserToProjectForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Toewijzen mislukt: " + insertError.message);
+      setError(tr("Toewijzen mislukt: ") + insertError.message);
       return;
     }
 
@@ -71,7 +73,7 @@ export default function AssignUserToProjectForm({
   if (!isMaster) return null;
 
   if (availableProjects.length === 0) {
-    return <p className="text-xs text-ink/30">Al aan alle projecten gekoppeld.</p>;
+    return <p className="text-xs text-ink/30">{tr("Al aan alle projecten gekoppeld.")}</p>;
   }
 
   if (!open) {
@@ -80,7 +82,7 @@ export default function AssignUserToProjectForm({
         onClick={() => setOpen(true)}
         className="text-xs font-medium text-ink/50 hover:text-gold"
       >
-        + Aan project toevoegen
+        {tr("+ Aan project toevoegen")}
       </button>
     );
   }
@@ -97,7 +99,7 @@ export default function AssignUserToProjectForm({
           onChange={(e) => setProjectId(e.target.value)}
           className="rounded-md border border-ivory-line bg-ivory-card px-2 py-1.5 text-xs text-ink focus:border-ink focus:outline-none"
         >
-          <option value="">Kies project...</option>
+          <option value="">{tr("Kies project...")}</option>
           {availableProjects.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -109,8 +111,8 @@ export default function AssignUserToProjectForm({
           onChange={(e) => setAccessLevel(e.target.value)}
           className="rounded-md border border-ivory-line bg-ivory-card px-2 py-1.5 text-xs text-ink focus:border-ink focus:outline-none"
         >
-          <option value="volledig">Volledig</option>
-          <option value="beperkt">Beperkt</option>
+          <option value="volledig">{tr("Volledig")}</option>
+          <option value="beperkt">{tr("Beperkt")}</option>
         </select>
       </div>
 
@@ -123,7 +125,7 @@ export default function AssignUserToProjectForm({
                 checked={sections.includes(s.value)}
                 onChange={() => toggleSection(s.value)}
               />
-              {s.label}
+              {tr(s.label)}
             </label>
           ))}
         </div>
@@ -137,14 +139,14 @@ export default function AssignUserToProjectForm({
           disabled={loading}
           className="rounded-md bg-ink px-3 py-1 text-xs font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "..." : "Toevoegen"}
+          {loading ? "..." : tr("Toevoegen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-md px-3 py-1 text-xs text-ink/50 hover:bg-ivory-line"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

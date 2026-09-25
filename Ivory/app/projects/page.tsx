@@ -8,11 +8,16 @@ import UploadDocumentForm from "@/components/UploadDocumentForm";
 import DocumentRow from "@/components/DocumentRow";
 import QuickDeleteProjectButton from "@/components/QuickDeleteProjectButton";
 import { getMyProjects } from "@/lib/getMyProjects";
+import { getT } from "@/lib/i18n/server";
+import { getLang } from "@/lib/i18n/server";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
   const supabase = createClient();
+  const tr = getT();
+  const dateLocale = DATE_LOCALE[getLang()];
 
   const {
     data: { user },
@@ -107,14 +112,14 @@ export default async function ProjectsPage() {
       .map((t: any) => ({
         label: t.title,
         date: t.due_date,
-        type: "Taak",
+        type: tr("Taak"),
         project: t.projects?.name,
         href: `/projects/${t.project_id}/tasks`,
       })),
     ...(registrations ?? []).map((r: any) => ({
       label: r.item_name,
       date: r.expected_completion,
-      type: "Registratie",
+      type: tr("Registratie"),
       project: r.projects?.name,
       href: `/projects/${r.project_id}/tracker`,
     })),
@@ -128,7 +133,7 @@ export default async function ProjectsPage() {
     due_date: t.due_date,
     urgency: t.urgency,
     project_id: t.project_id,
-    project_name: t.projects?.name ?? "Los (geen project)",
+    project_name: t.projects?.name ?? tr("Los (geen project)"),
   }));
 
   const ownerOptions = (allProfiles ?? []).map((p: any) => ({ id: p.id, full_name: p.full_name }));
@@ -138,29 +143,29 @@ export default async function ProjectsPage() {
     <GlobalShell projects={projectOptions}>
       <div className="space-y-10">
         <div>
-          <h1 className="font-display text-3xl text-ink">Dashboard</h1>
+          <h1 className="font-display text-3xl text-ink">{tr("Dashboard")}</h1>
           <p className="text-sm text-ink/50">
-            Overzicht over al je projecten heen
+            {tr("Overzicht over al je projecten heen")}
           </p>
         </div>
 
         {/* Globaal overzicht — klein, alleen als indicator */}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <StatCard label="Mijn open taken" value={myTasks.length} href="#mijn-taken" />
-          <StatCard label="Openstaande taken" value={(openTasks ?? []).length} href="#mijn-taken" />
+          <StatCard label={tr("Mijn open taken")} value={myTasks.length} href="#mijn-taken" />
+          <StatCard label={tr("Openstaande taken")} value={(openTasks ?? []).length} href="#mijn-taken" />
           <StatCard
-            label="Wacht op extern"
+            label={tr("Wacht op extern")}
             value={(openBlockers ?? []).length}
             tone={(openBlockers ?? []).length > 0 ? "danger" : "success"}
             href="#wachten-op-extern"
           />
-          <StatCard label="Actieve projecten" value={projects.length} href="#projecten" />
+          <StatCard label={tr("Actieve projecten")} value={projects.length} href="#projecten" />
         </div>
 
         {/* Taken — hoofdfocus */}
         <div id="mijn-taken" className="scroll-mt-6 space-y-3">
           <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-            <h2 className="mb-4 font-display text-lg text-ink">Mijn taken</h2>
+            <h2 className="mb-4 font-display text-lg text-ink">{tr("Mijn taken")}</h2>
             <MyTasksList tasks={myTasks} />
           </div>
           <QuickAddTaskForm projects={projectOptions} profiles={ownerOptions} />
@@ -169,10 +174,10 @@ export default async function ProjectsPage() {
         {/* Documenten — prominent, met upload */}
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="font-display text-lg text-ink">Documenten</h2>
+            <h2 className="font-display text-lg text-ink">{tr("Documenten")}</h2>
             <div className="flex items-center gap-3">
               <Link href="/documents" className="text-xs font-medium text-ink/50 hover:underline">
-                Alle documenten →
+                {tr("Alle documenten →")}
               </Link>
             </div>
           </div>
@@ -182,16 +187,16 @@ export default async function ProjectsPage() {
               <DocumentRow key={doc.id} doc={doc} projects={projectOptions} />
             ))}
             {(recentDocsWithUrls ?? []).length === 0 && (
-              <p className="text-sm text-ink/40">Nog geen documenten geüpload.</p>
+              <p className="text-sm text-ink/40">{tr("Nog geen documenten geüpload.")}</p>
             )}
           </div>
         </div>
 
         {/* Deadlines */}
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-          <h2 className="mb-4 font-display text-lg text-ink">Eerstvolgende deadlines</h2>
+          <h2 className="mb-4 font-display text-lg text-ink">{tr("Eerstvolgende deadlines")}</h2>
           {upcomingDeadlines.length === 0 ? (
-            <p className="text-sm text-ink/40">Geen deadlines gevonden.</p>
+            <p className="text-sm text-ink/40">{tr("Geen deadlines gevonden.")}</p>
           ) : (
             <ul className="space-y-3">
               {upcomingDeadlines.map((d, i) => (
@@ -202,7 +207,7 @@ export default async function ProjectsPage() {
                       <p className="text-xs text-ink/40">{d.type} · {d.project}</p>
                     </div>
                     <span className="text-xs font-medium text-ink/50">
-                      {new Date(d.date).toLocaleDateString("nl-NL")}
+                      {new Date(d.date).toLocaleDateString(dateLocale)}
                     </span>
                   </Link>
                 </li>
@@ -213,7 +218,7 @@ export default async function ProjectsPage() {
 
         {(openBlockers ?? []).length > 0 && (
           <div id="wachten-op-extern" className="scroll-mt-6 rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-            <h2 className="mb-4 font-display text-lg text-ink">Wachten op extern</h2>
+            <h2 className="mb-4 font-display text-lg text-ink">{tr("Wachten op extern")}</h2>
             <div className="space-y-2">
               {(openBlockers ?? []).map((b: any) => (
                 <Link
@@ -224,7 +229,7 @@ export default async function ProjectsPage() {
                   <div>
                     <p className="text-sm text-ink/80">{b.title}</p>
                     <p className="text-xs text-ink/40">
-                      {b.projects?.name} · wacht op {b.contacts?.name ?? "onbekend"}
+                      {b.projects?.name} · {tr("wacht op")} {b.contacts?.name ?? tr("onbekend")}
                     </p>
                   </div>
                 </Link>
@@ -236,7 +241,7 @@ export default async function ProjectsPage() {
         {/* Projecten — risico/voortgang alleen als klein indicatorpuntje */}
         <div id="projecten" className="scroll-mt-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-lg text-ink">Jouw projecten</h2>
+            <h2 className="font-display text-lg text-ink">{tr("Jouw projecten")}</h2>
           </div>
 
           <div className="grid gap-3 md:grid-cols-2">
@@ -262,7 +267,7 @@ export default async function ProjectsPage() {
                             : "bg-ink/5 text-ink/50"
                         }`}
                       >
-                        {p.status}
+                        {tr(p.status)}
                       </span>
                     </div>
                     {p.client && <p className="text-xs text-ink/50">{p.client}</p>}
@@ -270,7 +275,7 @@ export default async function ProjectsPage() {
 
                     <div className="mt-4 flex items-center gap-4">
                       <span
-                        title={stats.highRisks > 0 ? `${stats.highRisks} hoog risico` : "Geen hoge risico's"}
+                        title={stats.highRisks > 0 ? tr("{n} hoog risico", { n: stats.highRisks }) : tr("Geen hoge risico's")}
                         className={`h-2 w-2 shrink-0 rounded-full ${stats.highRisks > 0 ? "bg-brick" : "bg-teal"}`}
                       />
                       <div className="flex flex-1 items-center gap-2">
@@ -288,7 +293,7 @@ export default async function ProjectsPage() {
               );
             })}
             {projects.length === 0 && (
-              <p className="text-sm text-ink/40">Nog geen projecten. Maak je eerste project aan.</p>
+              <p className="text-sm text-ink/40">{tr("Nog geen projecten. Maak je eerste project aan.")}</p>
             )}
           </div>
         </div>

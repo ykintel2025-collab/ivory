@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 type Field = {
   key: string;
@@ -28,6 +29,7 @@ export default function EditModal({
   beforeSave?: (values: Record<string, any>) => Promise<void>;
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState<Record<string, any>>(initialValues);
@@ -60,7 +62,7 @@ export default function EditModal({
 
     setLoading(false);
     if (updateError) {
-      setError("Opslaan mislukt: " + updateError.message);
+      setError(tr("Opslaan mislukt: ") + updateError.message);
       return;
     }
     setOpen(false);
@@ -71,7 +73,7 @@ export default function EditModal({
     <>
       <button
         onClick={() => setOpen(true)}
-        title="Bewerken"
+        title={tr("Bewerken")}
         className="shrink-0 rounded-md p-1.5 text-ink/30 transition hover:bg-gold-soft hover:text-gold"
       >
         ✎
@@ -150,14 +152,14 @@ export default function EditModal({
                 disabled={loading}
                 className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
               >
-                {loading ? "Bezig..." : "Opslaan"}
+                {loading ? tr("Bezig...") : tr("Opslaan")}
               </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
               >
-                Annuleren
+                {tr("Annuleren")}
               </button>
             </div>
           </form>

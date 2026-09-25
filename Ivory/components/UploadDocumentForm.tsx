@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 const SECTIONS = [
   { value: "", label: "Algemeen (niet gekoppeld)" },
@@ -24,6 +25,7 @@ export default function UploadDocumentForm({
   projects?: Project[];
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -53,7 +55,7 @@ export default function UploadDocumentForm({
       .upload(path, file);
 
     if (uploadError) {
-      setError("Upload mislukt: " + uploadError.message);
+      setError(tr("Upload mislukt: ") + uploadError.message);
       setLoading(false);
       return;
     }
@@ -69,7 +71,7 @@ export default function UploadDocumentForm({
 
     setLoading(false);
     if (insertError) {
-      setError("Opslaan mislukt: " + insertError.message);
+      setError(tr("Opslaan mislukt: ") + insertError.message);
       return;
     }
 
@@ -86,7 +88,7 @@ export default function UploadDocumentForm({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Document uploaden
+        {tr("+ Document uploaden")}
       </button>
     );
   }
@@ -96,11 +98,11 @@ export default function UploadDocumentForm({
       onSubmit={handleUpload}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Document uploaden</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Document uploaden")}</h2>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Bestand
+          {tr("Bestand")}
         </label>
         <input
           required
@@ -113,14 +115,14 @@ export default function UploadDocumentForm({
       {showProjectPicker && (
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Project (optioneel — later ook toe te wijzen)
+            {tr("Project (optioneel — later ook toe te wijzen)")}
           </label>
           <select
             value={selectedProjectId}
             onChange={(e) => setSelectedProjectId(e.target.value)}
             className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
           >
-            <option value="">Nog niet toewijzen</option>
+            <option value="">{tr("Nog niet toewijzen")}</option>
             {projects!.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -133,7 +135,7 @@ export default function UploadDocumentForm({
       {selectedProjectId && (
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Koppelen aan onderdeel (optioneel)
+            {tr("Koppelen aan onderdeel (optioneel)")}
           </label>
           <select
             value={section}
@@ -142,7 +144,7 @@ export default function UploadDocumentForm({
           >
             {SECTIONS.map((s) => (
               <option key={s.value} value={s.value}>
-                {s.label}
+                {tr(s.label)}
               </option>
             ))}
           </select>
@@ -161,14 +163,14 @@ export default function UploadDocumentForm({
           disabled={loading || !file}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig met uploaden..." : "Uploaden"}
+          {loading ? tr("Bezig met uploaden...") : tr("Uploaden")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import AddEquipmentForm from "@/components/AddEquipmentForm";
 import DeleteButton from "@/components/DeleteButton";
 import EditModal from "@/components/EditModal";
+import { getT } from "@/lib/i18n/server";
+import { getLang } from "@/lib/i18n/server";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +14,8 @@ export default async function SuppliersPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
+  const dateLocale = DATE_LOCALE[getLang()];
   const { data: items } = await supabase
     .from("equipment_items")
     .select("*")
@@ -21,9 +26,9 @@ export default async function SuppliersPage({
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl text-ink">
-          Apparatuur en leveranciers
+          {tr("Apparatuur en leveranciers")}
         </h1>
-        <p className="text-sm text-ink/50">Kernitems per afdeling</p>
+        <p className="text-sm text-ink/50">{tr("Kernitems per afdeling")}</p>
       </div>
 
       <AddEquipmentForm projectId={params.projectId} />
@@ -32,13 +37,13 @@ export default async function SuppliersPage({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-ivory-line bg-ivory text-xs uppercase tracking-wide text-ink/50">
             <tr>
-              <th className="px-4 py-3">Code</th>
-              <th className="px-4 py-3">Omschrijving</th>
-              <th className="px-4 py-3">Afdeling</th>
-              <th className="px-4 py-3">Leverancier</th>
-              <th className="px-4 py-3">Model</th>
-              <th className="px-4 py-3">Certificering</th>
-              <th className="px-4 py-3">Prijsindicatie</th>
+              <th className="px-4 py-3">{tr("Code")}</th>
+              <th className="px-4 py-3">{tr("Omschrijving")}</th>
+              <th className="px-4 py-3">{tr("Afdeling")}</th>
+              <th className="px-4 py-3">{tr("Leverancier")}</th>
+              <th className="px-4 py-3">{tr("Model")}</th>
+              <th className="px-4 py-3">{tr("Certificering")}</th>
+              <th className="px-4 py-3">{tr("Prijsindicatie")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -64,7 +69,7 @@ export default async function SuppliersPage({
                 <td className="px-4 py-3 text-ink/70">
                   {item.price_estimate
                     ? `${item.currency ?? "EUR"} ${item.price_estimate.toLocaleString(
-                        "nl-NL"
+                        dateLocale
                       )}`
                     : "—"}
                 </td>
@@ -73,7 +78,7 @@ export default async function SuppliersPage({
                     <EditModal
                       table="equipment_items"
                       id={item.id}
-                      title="Apparatuur bewerken"
+                      title={tr("Apparatuur bewerken")}
                       initialValues={{
                         line_code: item.line_code,
                         description: item.description,
@@ -84,13 +89,13 @@ export default async function SuppliersPage({
                         price_estimate: item.price_estimate,
                       }}
                       fields={[
-                        { key: "line_code", label: "Code", type: "text" },
-                        { key: "description", label: "Omschrijving", type: "text" },
-                        { key: "department", label: "Afdeling", type: "text" },
-                        { key: "supplier", label: "Leverancier", type: "text" },
-                        { key: "model", label: "Model", type: "text" },
-                        { key: "certification_status", label: "Certificering", type: "text" },
-                        { key: "price_estimate", label: "Prijsindicatie (EUR)", type: "number" },
+                        { key: "line_code", label: tr("Code"), type: "text" },
+                        { key: "description", label: tr("Omschrijving"), type: "text" },
+                        { key: "department", label: tr("Afdeling"), type: "text" },
+                        { key: "supplier", label: tr("Leverancier"), type: "text" },
+                        { key: "model", label: tr("Model"), type: "text" },
+                        { key: "certification_status", label: tr("Certificering"), type: "text" },
+                        { key: "price_estimate", label: tr("Prijsindicatie (EUR)"), type: "number" },
                       ]}
                     />
                     <DeleteButton table="equipment_items" id={item.id} />
@@ -101,7 +106,7 @@ export default async function SuppliersPage({
             {(items ?? []).length === 0 && (
               <tr>
                 <td colSpan={8} className="px-4 py-6 text-center text-ink/40">
-                  Nog geen apparatuur toegevoegd.
+                  {tr("Nog geen apparatuur toegevoegd.")}
                 </td>
               </tr>
             )}

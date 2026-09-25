@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 export default function NewProjectForm({
   variant = "button",
@@ -11,6 +12,7 @@ export default function NewProjectForm({
   variant?: "button" | "sidebar" | "nav";
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -30,7 +32,7 @@ export default function NewProjectForm({
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setError("Niet ingelogd.");
+      setError(tr("Niet ingelogd."));
       setLoading(false);
       return;
     }
@@ -51,7 +53,7 @@ export default function NewProjectForm({
       .single();
 
     if (insertError || !project) {
-      setError("Aanmaken mislukt: " + insertError?.message);
+      setError(tr("Aanmaken mislukt: ") + insertError?.message);
       setLoading(false);
       return;
     }
@@ -77,10 +79,10 @@ export default function NewProjectForm({
         {variant === "nav" ? (
           <>
             <span className="w-4 text-center text-xs">+</span>
-            Nieuw project
+            {tr("Nieuw project")}
           </>
         ) : (
-          "+ Nieuw project"
+          tr("+ Nieuw project")
         )}
       </button>
 
@@ -94,22 +96,22 @@ export default function NewProjectForm({
             onSubmit={handleCreate}
             className="w-full max-w-md space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-lg"
           >
-            <h2 className="font-display text-lg text-ink">Nieuw project</h2>
+            <h2 className="font-display text-lg text-ink">{tr("Nieuw project")}</h2>
             <div>
               <label className="mb-1 block text-xs font-medium text-ink/60">
-                Projectnaam
+                {tr("Projectnaam")}
               </label>
               <input
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
-                placeholder="bijv. Shajar Hospital"
+                placeholder={tr("bijv. Shajar Hospital")}
               />
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-ink/60">
-                Opdrachtgever
+                {tr("Opdrachtgever")}
               </label>
               <input
                 value={client}
@@ -119,7 +121,7 @@ export default function NewProjectForm({
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-ink/60">
-                Locatie
+                {tr("Locatie")}
               </label>
               <input
                 value={location}
@@ -140,14 +142,14 @@ export default function NewProjectForm({
                 disabled={loading}
                 className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
               >
-                {loading ? "Bezig..." : "Aanmaken"}
+                {loading ? tr("Bezig...") : tr("Aanmaken")}
               </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
               >
-                Annuleren
+                {tr("Annuleren")}
               </button>
             </div>
           </form>

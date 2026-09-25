@@ -4,6 +4,7 @@ import ManagePhasesForm from "@/components/ManagePhasesForm";
 import AddProjectMemberForm from "@/components/AddProjectMemberForm";
 import DeleteButton from "@/components/DeleteButton";
 import DeleteProjectButton from "@/components/DeleteProjectButton";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function SettingsPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
   const projectId = params.projectId;
 
   const [
@@ -53,18 +55,18 @@ export default async function SettingsPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-2xl text-ink">Instellingen</h1>
+        <h1 className="font-display text-2xl text-ink">{tr("Instellingen")}</h1>
         <p className="text-sm text-ink/50">{project?.name}</p>
       </div>
 
       {/* Projectgegevens */}
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="font-display text-lg text-ink">Projectgegevens</h2>
+          <h2 className="font-display text-lg text-ink">{tr("Projectgegevens")}</h2>
           <EditModal
             table="projects"
             id={projectId}
-            title="Projectgegevens bewerken"
+            title={tr("Projectgegevens bewerken")}
             initialValues={{
               name: project?.name,
               client: project?.client,
@@ -72,17 +74,17 @@ export default async function SettingsPage({
               status: project?.status,
             }}
             fields={[
-              { key: "name", label: "Projectnaam", type: "text" },
-              { key: "client", label: "Opdrachtgever", type: "text" },
-              { key: "location", label: "Locatie", type: "text" },
+              { key: "name", label: tr("Projectnaam"), type: "text" },
+              { key: "client", label: tr("Opdrachtgever"), type: "text" },
+              { key: "location", label: tr("Locatie"), type: "text" },
               {
                 key: "status",
-                label: "Status",
+                label: tr("Status"),
                 type: "select",
                 options: [
-                  { value: "actief", label: "Actief" },
-                  { value: "gepauzeerd", label: "Gepauzeerd" },
-                  { value: "afgerond", label: "Afgerond" },
+                  { value: "actief", label: tr("Actief") },
+                  { value: "gepauzeerd", label: tr("Gepauzeerd") },
+                  { value: "afgerond", label: tr("Afgerond") },
                 ],
               },
             ]}
@@ -90,19 +92,19 @@ export default async function SettingsPage({
         </div>
         <dl className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <dt className="text-xs text-ink/40">Naam</dt>
+            <dt className="text-xs text-ink/40">{tr("Naam")}</dt>
             <dd className="text-ink">{project?.name}</dd>
           </div>
           <div>
-            <dt className="text-xs text-ink/40">Status</dt>
-            <dd className="text-ink">{project?.status}</dd>
+            <dt className="text-xs text-ink/40">{tr("Status")}</dt>
+            <dd className="text-ink">{project?.status ? tr(project.status) : "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs text-ink/40">Opdrachtgever</dt>
+            <dt className="text-xs text-ink/40">{tr("Opdrachtgever")}</dt>
             <dd className="text-ink">{project?.client || "—"}</dd>
           </div>
           <div>
-            <dt className="text-xs text-ink/40">Locatie</dt>
+            <dt className="text-xs text-ink/40">{tr("Locatie")}</dt>
             <dd className="text-ink">{project?.location || "—"}</dd>
           </div>
         </dl>
@@ -114,7 +116,7 @@ export default async function SettingsPage({
       {/* Team & rechten */}
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-lg text-ink">Team & rechten</h2>
+          <h2 className="font-display text-lg text-ink">{tr("Team & rechten")}</h2>
         </div>
         <div className="mb-4 space-y-2">
           {(projectMembers ?? []).map((m: any) => (
@@ -127,17 +129,17 @@ export default async function SettingsPage({
                   {m.profiles?.full_name}
                   {m.role === "eigenaar" && (
                     <span className="ml-2 rounded-full bg-gold-soft px-2 py-0.5 text-xs font-medium text-gold">
-                      Eigenaar
+                      {tr("Eigenaar")}
                     </span>
                   )}
                 </p>
                 <p className="text-xs text-ink/40">
                   {m.access_level === "volledig"
-                    ? "Volledige toegang"
-                    : `Beperkt: ${
+                    ? tr("Volledige toegang")
+                    : `${tr("Beperkt")}: ${
                         (m.allowed_sections ?? [])
-                          .map((s: string) => SECTION_LABELS[s] ?? s)
-                          .join(", ") || "geen onderdelen gekozen"
+                          .map((s: string) => tr(SECTION_LABELS[s] ?? s))
+                          .join(", ") || tr("geen onderdelen gekozen")
                       }`}
                 </p>
               </div>
@@ -145,13 +147,13 @@ export default async function SettingsPage({
                 <DeleteButton
                   table="project_members"
                   id={m.id}
-                  confirmText={`${m.profiles?.full_name} uit dit project verwijderen?`}
+                  confirmText={tr("{naam} uit dit project verwijderen?", { naam: m.profiles?.full_name ?? "" })}
                 />
               )}
             </div>
           ))}
           {(projectMembers ?? []).length === 0 && (
-            <p className="text-sm text-ink/40">Nog geen teamleden.</p>
+            <p className="text-sm text-ink/40">{tr("Nog geen teamleden.")}</p>
           )}
         </div>
         <AddProjectMemberForm
@@ -162,7 +164,7 @@ export default async function SettingsPage({
 
       {/* Gevarenzone */}
       <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
-        <h2 className="mb-3 font-display text-lg text-ink/60">Gevarenzone</h2>
+        <h2 className="mb-3 font-display text-lg text-ink/60">{tr("Gevarenzone")}</h2>
         <DeleteProjectButton
           projectId={projectId}
           projectName={project?.name ?? ""}

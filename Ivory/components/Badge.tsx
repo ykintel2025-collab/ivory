@@ -1,3 +1,7 @@
+"use client";
+
+import { useT } from "@/lib/i18n/client";
+
 const STYLES: Record<string, string> = {
   hoog: "bg-brick-soft text-brick",
   midden: "bg-amber-soft text-amber",
@@ -24,13 +28,14 @@ const LABELS: Record<string, string> = {
 };
 
 export default function Badge({ value }: { value: string }) {
+  const tr = useT();
   const style = STYLES[value] ?? "bg-ink/5 text-ink/70";
   const label = LABELS[value] ?? value.replace(/_/g, " ");
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${style}`}
     >
-      {label}
+      {tr(label)}
     </span>
   );
 }

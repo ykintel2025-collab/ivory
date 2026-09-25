@@ -4,11 +4,13 @@ import DocumentRow from "@/components/DocumentRow";
 import UploadDocumentForm from "@/components/UploadDocumentForm";
 import Link from "next/link";
 import { getMyProjects } from "@/lib/getMyProjects";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function GlobalDocumentsPage() {
   const supabase = createClient();
+  const tr = getT();
 
   const { data: documents } = await supabase
     .from("documents")
@@ -32,7 +34,7 @@ export default async function GlobalDocumentsPage() {
     if (!doc.project_id) continue;
     const key = doc.project_id;
     if (!byProject.has(key)) {
-      byProject.set(key, { name: doc.projects?.name ?? "Onbekend project", docs: [] });
+      byProject.set(key, { name: doc.projects?.name ?? tr("Onbekend project"), docs: [] });
     }
     byProject.get(key)!.docs.push(doc);
   }
@@ -42,9 +44,9 @@ export default async function GlobalDocumentsPage() {
       <div className="space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="font-display text-3xl text-ink">Documenten</h1>
+            <h1 className="font-display text-3xl text-ink">{tr("Documenten")}</h1>
             <p className="text-sm text-ink/50">
-              Alle documenten, over al je projecten heen — of nog niet toegewezen
+              {tr("Alle documenten, over al je projecten heen — of nog niet toegewezen")}
             </p>
           </div>
         </div>
@@ -54,7 +56,7 @@ export default async function GlobalDocumentsPage() {
         {unassigned.length > 0 && (
           <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
             <h2 className="mb-4 font-display text-lg text-ink">
-              Nog niet toegewezen
+              {tr("Nog niet toegewezen")}
             </h2>
             <div className="space-y-2">
               {unassigned.map((doc: any) => (
@@ -66,7 +68,7 @@ export default async function GlobalDocumentsPage() {
 
         {byProject.size === 0 && unassigned.length === 0 && (
           <p className="text-sm text-ink/40">
-            Nog geen documenten geüpload.
+            {tr("Nog geen documenten geüpload.")}
           </p>
         )}
 
@@ -81,7 +83,7 @@ export default async function GlobalDocumentsPage() {
                 href={`/projects/${projectId}/documents`}
                 className="text-xs font-medium text-ink/50 hover:underline"
               >
-                Naar project →
+                {tr("Naar project →")}
               </Link>
             </div>
             <div className="space-y-2">

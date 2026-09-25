@@ -2,6 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import AddScopeItemForm from "@/components/AddScopeItemForm";
 import DeleteButton from "@/components/DeleteButton";
 import EditModal from "@/components/EditModal";
+import { getT } from "@/lib/i18n/server";
+import { getLang } from "@/lib/i18n/server";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +14,8 @@ export default async function ScopePage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
+  const dateLocale = DATE_LOCALE[getLang()];
   const { data: items } = await supabase
     .from("scope_items")
     .select("*")
@@ -20,9 +25,9 @@ export default async function ScopePage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl text-ink">Scope-log</h1>
+        <h1 className="font-display text-2xl text-ink">{tr("Scope-log")}</h1>
         <p className="text-sm text-ink/50">
-          Vastgelegde scope-beslissingen met bron en datum
+          {tr("Vastgelegde scope-beslissingen met bron en datum")}
         </p>
       </div>
 
@@ -32,10 +37,10 @@ export default async function ScopePage({
         <table className="w-full text-left text-sm">
           <thead className="border-b border-ivory-line bg-ivory text-xs uppercase tracking-wide text-ink/50">
             <tr>
-              <th className="px-4 py-3">Item</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Toelichting</th>
-              <th className="px-4 py-3">Bron</th>
+              <th className="px-4 py-3">{tr("Item")}</th>
+              <th className="px-4 py-3">{tr("Status")}</th>
+              <th className="px-4 py-3">{tr("Toelichting")}</th>
+              <th className="px-4 py-3">{tr("Bron")}</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -53,7 +58,7 @@ export default async function ScopePage({
                         : "bg-ink/5 text-ink/50"
                     }`}
                   >
-                    {item.in_scope ? "In scope" : "Buiten scope"}
+                    {item.in_scope ? tr("In scope") : tr("Buiten scope")}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-ink/70">{item.explanation}</td>
@@ -62,7 +67,7 @@ export default async function ScopePage({
                   {item.source_date && (
                     <>
                       <br />
-                      {new Date(item.source_date).toLocaleDateString("nl-NL")}
+                      {new Date(item.source_date).toLocaleDateString(dateLocale)}
                     </>
                   )}
                 </td>
@@ -71,7 +76,7 @@ export default async function ScopePage({
                     <EditModal
                       table="scope_items"
                       id={item.id}
-                      title="Scope-item bewerken"
+                      title={tr("Scope-item bewerken")}
                       initialValues={{
                         item_name: item.item_name,
                         in_scope: String(item.in_scope),
@@ -80,19 +85,19 @@ export default async function ScopePage({
                         source_date: item.source_date,
                       }}
                       fields={[
-                        { key: "item_name", label: "Item", type: "text" },
+                        { key: "item_name", label: tr("Item"), type: "text" },
                         {
                           key: "in_scope",
-                          label: "Status",
+                          label: tr("Status"),
                           type: "boolean",
                           options: [
-                            { value: "true", label: "In scope" },
-                            { value: "false", label: "Buiten scope" },
+                            { value: "true", label: tr("In scope") },
+                            { value: "false", label: tr("Buiten scope") },
                           ],
                         },
-                        { key: "explanation", label: "Toelichting", type: "textarea" },
-                        { key: "source_reference", label: "Bron", type: "text" },
-                        { key: "source_date", label: "Brondatum", type: "date" },
+                        { key: "explanation", label: tr("Toelichting"), type: "textarea" },
+                        { key: "source_reference", label: tr("Bron"), type: "text" },
+                        { key: "source_date", label: tr("Brondatum"), type: "date" },
                       ]}
                     />
                     <DeleteButton table="scope_items" id={item.id} />
@@ -103,7 +108,7 @@ export default async function ScopePage({
             {(items ?? []).length === 0 && (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center text-ink/40">
-                  Nog geen scope-items toegevoegd.
+                  {tr("Nog geen scope-items toegevoegd.")}
                 </td>
               </tr>
             )}

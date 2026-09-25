@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/client";
 import DeleteButton from "@/components/DeleteButton";
 import AssignDocumentForm from "@/components/AssignDocumentForm";
+import { useLang, useT } from "@/lib/i18n/client";
+import { DATE_LOCALE } from "@/lib/i18n/translate";
 
 function formatSize(bytes: number | null) {
   if (!bytes) return "";
@@ -18,6 +20,8 @@ export default function DocumentRow({
   projects?: { id: string; name: string }[];
 }) {
   const supabase = createClient();
+  const tr = useT();
+  const dateLocale = DATE_LOCALE[useLang()];
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-ivory-line px-3 py-2.5">
@@ -36,8 +40,8 @@ export default function DocumentRow({
           <p className="truncate text-sm font-medium text-ink">{doc.name}</p>
         )}
         <p className="text-xs text-ink/40">
-          {doc.profiles?.full_name ?? "Onbekend"} ·{" "}
-          {new Date(doc.created_at).toLocaleDateString("nl-NL")}
+          {doc.profiles?.full_name ?? tr("Onbekend")} ·{" "}
+          {new Date(doc.created_at).toLocaleDateString(dateLocale)}
           {doc.size ? ` · ${formatSize(doc.size)}` : ""}
         </p>
       </div>
@@ -52,7 +56,7 @@ export default function DocumentRow({
         <DeleteButton
           table="documents"
           id={doc.id}
-          confirmText={`${doc.name} verwijderen? Dit kan niet ongedaan worden gemaakt.`}
+          confirmText={tr("{naam} verwijderen? Dit kan niet ongedaan worden gemaakt.", { naam: doc.name })}
           beforeDelete={async () => {
             await supabase.storage.from("documents").remove([doc.storage_path]);
           }}

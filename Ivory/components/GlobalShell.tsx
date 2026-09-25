@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import NewProjectForm from "@/components/NewProjectForm";
 import ProjectSwitcher from "@/components/ProjectSwitcher";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useT } from "@/lib/i18n/client";
 
 const NAV = [
   { href: "/projects", label: "Dashboard", icon: "◇" },
@@ -26,6 +28,7 @@ export default function GlobalShell({
   const router = useRouter();
   const supabase = createClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const tr = useT();
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -62,7 +65,7 @@ export default function GlobalShell({
                 }`}
               >
                 <span className="w-4 text-center text-xs">{item.icon}</span>
-                {item.label}
+                {tr(item.label)}
               </Link>
             );
           })}
@@ -70,7 +73,7 @@ export default function GlobalShell({
         {projects && projects.length > 0 && (
           <div className="mb-2">
             <p className="mb-1 px-1 text-xs font-medium text-ivory/40">
-              Ga naar project
+              {tr("Ga naar project")}
             </p>
             <ProjectSwitcher projects={projects} />
           </div>
@@ -79,13 +82,13 @@ export default function GlobalShell({
           href="/account/security"
           className="rounded-lg px-3 py-2 text-left text-xs font-medium text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
-          Beveiliging
+          {tr("Beveiliging")}
         </Link>
         <button
           onClick={handleLogout}
           className="mt-1 rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
-          Uitloggen
+          {tr("Uitloggen")}
         </button>
       </aside>
 
@@ -101,12 +104,15 @@ export default function GlobalShell({
           />
           <span className="font-display text-sm text-ivory">Ivory Basecamp</span>
         </div>
+        <div className="flex items-center gap-2">
+        <LanguageSwitcher tone="dark" />
         <button
           onClick={() => setMobileOpen((v) => !v)}
           className="rounded-lg border border-ivory/20 px-3 py-1.5 text-sm text-ivory"
         >
-          Menu
+          {tr("Menu")}
         </button>
+        </div>
       </div>
 
       {mobileOpen && (
@@ -127,14 +133,14 @@ export default function GlobalShell({
                   }`}
                 >
                   <span className="w-4 text-center text-xs">{item.icon}</span>
-                  {item.label}
+                  {tr(item.label)}
                 </Link>
               );
             })}
             {projects && projects.length > 0 && (
               <div className="pt-2">
                 <p className="mb-1 px-1 text-xs font-medium text-ivory/40">
-                  Ga naar project
+                  {tr("Ga naar project")}
                 </p>
                 <ProjectSwitcher projects={projects} />
               </div>
@@ -144,20 +150,25 @@ export default function GlobalShell({
               onClick={() => setMobileOpen(false)}
               className="block rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
             >
-              Beveiliging
+              {tr("Beveiliging")}
             </Link>
             <button
               onClick={handleLogout}
               className="mt-2 w-full rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
             >
-              Uitloggen
+              {tr("Uitloggen")}
             </button>
           </nav>
         </div>
       )}
 
       <main className="flex-1 px-4 py-6 pt-24 md:px-10 md:py-10 md:pt-10">
-        <div className="mx-auto max-w-6xl">{children}</div>
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-4 hidden justify-end md:flex">
+            <LanguageSwitcher />
+          </div>
+          {children}
+        </div>
       </main>
     </div>
   );

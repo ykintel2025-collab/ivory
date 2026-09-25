@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/client";
 
 export default function ToggleApprovedButton({
   userId,
@@ -12,6 +13,7 @@ export default function ToggleApprovedButton({
   approved: boolean;
 }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
 
@@ -25,14 +27,14 @@ export default function ToggleApprovedButton({
   return (
     <div className="flex items-center gap-2">
       <span className={`text-xs font-medium ${approved ? "text-teal" : "text-brick"}`}>
-        {approved ? "Actief" : "Geblokkeerd"}
+        {approved ? tr("Actief") : tr("Geblokkeerd")}
       </span>
       <button
         role="switch"
         aria-checked={approved}
         onClick={handleToggle}
         disabled={busy}
-        title={approved ? "Klik om te blokkeren" : "Klik om te activeren"}
+        title={approved ? tr("Klik om te blokkeren") : tr("Klik om te activeren")}
         className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50 ${
           approved ? "bg-teal" : "bg-ink/20"
         }`}

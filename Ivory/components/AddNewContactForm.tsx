@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useGlobalRole } from "@/lib/useGlobalRole";
+import { useT } from "@/lib/i18n/client";
 
 export default function AddNewContactForm({ projectId }: { projectId: string }) {
   const supabase = createClient();
+  const tr = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -38,7 +40,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
       .single();
 
     if (contactError || !contact) {
-      setError("Aanmaken mislukt: " + contactError?.message);
+      setError(tr("Aanmaken mislukt: ") + contactError?.message);
       setLoading(false);
       return;
     }
@@ -52,7 +54,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
 
     setLoading(false);
     if (linkError) {
-      setError("Toewijzen aan project mislukt: " + linkError.message);
+      setError(tr("Toewijzen aan project mislukt: ") + linkError.message);
       return;
     }
 
@@ -74,7 +76,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
         onClick={() => setOpen(true)}
         className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft"
       >
-        + Nieuwe relatie
+        {tr("+ Nieuwe relatie")}
       </button>
     );
   }
@@ -84,15 +86,14 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
       onSubmit={handleCreate}
       className="space-y-3 rounded-xl border border-ivory-line bg-ivory-card p-5 shadow-sm"
     >
-      <h2 className="font-display text-lg text-ink">Nieuwe relatie</h2>
+      <h2 className="font-display text-lg text-ink">{tr("Nieuwe relatie")}</h2>
       <p className="text-xs text-ink/40">
-        Deze relatie wordt algemeen aangemaakt en direct aan dit project
-        gekoppeld. Je kunt 'm later ook aan andere projecten toewijzen.
+        {tr("Deze relatie wordt algemeen aangemaakt en direct aan dit project gekoppeld. Je kunt 'm later ook aan andere projecten toewijzen.")}
       </p>
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Naam (bedrijf of persoon)
+          {tr("Naam (bedrijf of persoon)")}
         </label>
         <input
           required
@@ -104,12 +105,12 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Rol in dit project
+          {tr("Rol in dit project")}
         </label>
         <input
           value={role}
           onChange={(e) => setRole(e.target.value)}
-          placeholder="bv. Juridisch adviseur"
+          placeholder={tr("bv. Juridisch adviseur")}
           className="w-full rounded-lg border border-ivory-line bg-ivory-card px-3 py-2 text-sm text-ink focus:border-ink focus:outline-none"
         />
       </div>
@@ -117,7 +118,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Contactpersoon
+            {tr("Contactpersoon")}
           </label>
           <input
             value={contactName}
@@ -127,7 +128,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            E-mail
+            {tr("E-mail")}
           </label>
           <input
             type="email"
@@ -138,7 +139,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
         </div>
         <div>
           <label className="mb-1 block text-xs font-medium text-ink/60">
-            Telefoon
+            {tr("Telefoon")}
           </label>
           <input
             value={contactPhone}
@@ -150,7 +151,7 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
 
       <div>
         <label className="mb-1 block text-xs font-medium text-ink/60">
-          Notities
+          {tr("Notities")}
         </label>
         <textarea
           value={notes}
@@ -172,14 +173,14 @@ export default function AddNewContactForm({ projectId }: { projectId: string }) 
           disabled={loading}
           className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-ivory hover:bg-ink-soft disabled:opacity-60"
         >
-          {loading ? "Bezig..." : "Aanmaken en toewijzen"}
+          {loading ? tr("Bezig...") : tr("Aanmaken en toewijzen")}
         </button>
         <button
           type="button"
           onClick={() => setOpen(false)}
           className="rounded-lg px-4 py-2 text-sm text-ink/60 hover:bg-ivory"
         >
-          Annuleren
+          {tr("Annuleren")}
         </button>
       </div>
     </form>

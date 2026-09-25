@@ -6,6 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 import ProjectSwitcher from "@/components/ProjectSwitcher";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useT } from "@/lib/i18n/client";
 
 type NavItem = { href: string; label: string; icon: string; section: string | null };
 
@@ -42,6 +44,7 @@ export default function AppShell({
   const router = useRouter();
   const supabase = createClient();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const tr = useT();
 
   const items = allNavItems(projectId).filter((item) => {
     if (accessLevel === "volledig") return true;
@@ -75,7 +78,7 @@ export default function AppShell({
             <ProjectSwitcher projects={projects} currentProjectId={projectId} />
           ) : (
             <p className="truncate font-display text-base text-ivory">
-              {projectName ?? "Project"}
+              {projectName ?? tr("Project")}
             </p>
           )}
         </div>
@@ -94,7 +97,7 @@ export default function AppShell({
                 }`}
               >
                 <span className="w-4 text-center text-xs">{item.icon}</span>
-                {item.label}
+                {tr(item.label)}
               </Link>
             );
           })}
@@ -103,19 +106,19 @@ export default function AppShell({
           href="/projects"
           className="mb-1 rounded-lg px-3 py-2 text-left text-xs font-medium text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
-          ← Alle projecten / Relaties
+          ← {tr("Alle projecten / Relaties")}
         </Link>
         <Link
           href="/account/security"
           className="mb-1 rounded-lg px-3 py-2 text-left text-xs font-medium text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
-          Beveiliging
+          {tr("Beveiliging")}
         </Link>
         <button
           onClick={handleLogout}
           className="rounded-lg px-3 py-2 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
         >
-          Uitloggen
+          {tr("Uitloggen")}
         </button>
       </aside>
 
@@ -123,18 +126,21 @@ export default function AppShell({
       <div className="fixed inset-x-0 top-0 z-20 flex items-center justify-between bg-ink px-4 py-3 md:hidden">
         <div>
           <p className="font-display text-base text-ivory">
-            {projectName ?? "Project"}
+            {projectName ?? tr("Project")}
           </p>
           <Link href="/projects" className="text-xs text-ivory/50">
-            ← Alle projecten
+            ← {tr("Alle projecten")}
           </Link>
         </div>
+        <div className="flex items-center gap-2">
+        <LanguageSwitcher tone="dark" />
         <button
           onClick={() => setMobileOpen((v) => !v)}
           className="rounded-lg border border-ivory/20 px-3 py-1.5 text-sm text-ivory"
         >
-          Menu
+          {tr("Menu")}
         </button>
+        </div>
       </div>
 
       {mobileOpen && (
@@ -159,7 +165,7 @@ export default function AppShell({
                   }`}
                 >
                   <span className="w-4 text-center text-xs">{item.icon}</span>
-                  {item.label}
+                  {tr(item.label)}
                 </Link>
               );
             })}
@@ -168,20 +174,25 @@ export default function AppShell({
               onClick={() => setMobileOpen(false)}
               className="block rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
             >
-              Beveiliging
+              {tr("Beveiliging")}
             </Link>
             <button
               onClick={handleLogout}
               className="mt-2 w-full rounded-lg px-3 py-3 text-left text-sm text-ivory/50 hover:bg-ink-soft hover:text-ivory"
             >
-              Uitloggen
+              {tr("Uitloggen")}
             </button>
           </nav>
         </div>
       )}
 
       <main className="flex-1 px-4 py-6 pt-24 md:px-10 md:py-10 md:pt-10">
-        <div className="mx-auto max-w-6xl">{children}</div>
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-4 hidden justify-end md:flex">
+            <LanguageSwitcher />
+          </div>
+          {children}
+        </div>
       </main>
     </div>
   );

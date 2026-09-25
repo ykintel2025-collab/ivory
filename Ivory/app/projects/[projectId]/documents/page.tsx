@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import UploadDocumentForm from "@/components/UploadDocumentForm";
 import DocumentRow from "@/components/DocumentRow";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export default async function DocumentsPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
   const projectId = params.projectId;
 
   const { data: documents } = await supabase
@@ -47,9 +49,9 @@ export default async function DocumentsPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl text-ink">Documenten</h1>
+        <h1 className="font-display text-2xl text-ink">{tr("Documenten")}</h1>
         <p className="text-sm text-ink/50">
-          Bestanden voor dit project, algemeen of gekoppeld aan een onderdeel
+          {tr("Bestanden voor dit project, algemeen of gekoppeld aan een onderdeel")}
         </p>
       </div>
 
@@ -64,7 +66,7 @@ export default async function DocumentsPage({
             className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm"
           >
             <h2 className="mb-4 font-display text-lg text-ink">
-              {key ? SECTION_LABELS[key] : "Algemeen"}
+              {key ? tr(SECTION_LABELS[key]) : tr("Algemeen")}
             </h2>
             <div className="space-y-2">
               {docs.map((doc) => (
@@ -76,7 +78,7 @@ export default async function DocumentsPage({
       })}
 
       {docsWithUrls.length === 0 && (
-        <p className="text-sm text-ink/40">Nog geen documenten geüpload.</p>
+        <p className="text-sm text-ink/40">{tr("Nog geen documenten geüpload.")}</p>
       )}
     </div>
   );

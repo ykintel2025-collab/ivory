@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import KanbanBoard from "@/components/KanbanBoard";
 import NewTaskForm from "@/components/NewTaskForm";
+import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,7 @@ export default async function TasksPage({
   params: { projectId: string };
 }) {
   const supabase = createClient();
+  const tr = getT();
   const projectId = params.projectId;
 
   const {
@@ -41,11 +43,11 @@ export default async function TasksPage({
   // teamlid doe je bewust via Instellingen, niet via taken-toewijzing.
   const assignableProfiles = (members ?? [])
     .filter((m: any) => !m.profiles?.hidden || canSeeHidden)
-    .map((m: any) => ({ user_id: m.user_id, full_name: m.profiles?.full_name ?? "Onbekend" }));
+    .map((m: any) => ({ user_id: m.user_id, full_name: m.profiles?.full_name ?? tr("Onbekend") }));
 
   const maskedTasks = (tasks ?? []).map((t: any) => {
     if (t.profiles?.hidden && !canSeeHidden) {
-      return { ...t, profiles: { full_name: "Intern toegewezen" } };
+      return { ...t, profiles: { full_name: tr("Intern toegewezen") } };
     }
     return t;
   });
@@ -54,9 +56,9 @@ export default async function TasksPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl text-ink">Taken</h1>
+          <h1 className="font-display text-2xl text-ink">{tr("Taken")}</h1>
           <p className="text-sm text-ink/50">
-            Kanban-bord — gebruik de knoppen om taken te verplaatsen
+            {tr("Kanban-bord — gebruik de knoppen om taken te verplaatsen")}
           </p>
         </div>
       </div>
