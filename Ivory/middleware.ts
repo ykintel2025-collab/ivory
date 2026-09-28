@@ -47,7 +47,15 @@ export async function middleware(request: NextRequest) {
   // Tweestapsverificatie: als iemand een geverifieerde authenticator heeft
   // ingesteld, maar de code deze sessie nog niet heeft ingevoerd, mag alleen
   // de verificatiepagina zelf (of login/uitloggen) bezocht worden.
+  // De Master kan verplichte tweestapsverificatie tijdelijk uitzetten (Instellingen,
+  // migration_018). Bij twijfel (fout, functie ontbreekt) blijft het verplicht.
+  let twofaRequired = true;
   if (user && !isVerify2fa && !isLoginPage && !isAuthCallback) {
+    const { data: required, error: requiredError } = await supabase.rpc("twofa_required");
+    twofaRequired = requiredError ? true : required !== false;
+  }
+
+  if (twofaRequired && user && !isVerify2fa && !isLoginPage && !isAuthCallback) {
     const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
     if (aal && aal.nextLevel === "aal2" && aal.currentLevel !== aal.nextLevel) {
       const url = request.nextUrl.clone();

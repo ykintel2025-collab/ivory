@@ -5,6 +5,7 @@ import AssignUserToProjectForm from "@/components/AssignUserToProjectForm";
 import DeleteButton from "@/components/DeleteButton";
 import GlobalRoleSelect from "@/components/GlobalRoleSelect";
 import CreateUserForm from "@/components/CreateUserForm";
+import TwoFactorSwitch from "@/components/TwoFactorSwitch";
 import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ export default async function GlobalSettingsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: profiles }, { data: allMemberships }, { data: allProjects }, { data: viewerProfile }] =
+  const [{ data: profiles }, { data: allMemberships }, { data: allProjects }, { data: viewerProfile }, { data: twofaRequired }] =
     await Promise.all([
       supabase.from("profiles").select("*").order("full_name"),
       supabase
@@ -37,6 +38,7 @@ export default async function GlobalSettingsPage() {
         .select("id, user_id, project_id, access_level, allowed_sections, role, projects(id, name)"),
       supabase.from("projects").select("id, name").order("name"),
       supabase.from("profiles").select("global_role").eq("id", user?.id ?? "").single(),
+      supabase.rpc("twofa_required"),
     ]);
 
   const projectOptions = allProjects ?? [];
@@ -58,6 +60,8 @@ export default async function GlobalSettingsPage() {
             {tr("Gebruikersbeheer en toegang tot al je projecten, centraal")}
           </p>
         </div>
+
+        {isMaster && <TwoFactorSwitch required={twofaRequired !== false} />}
 
         <div className="rounded-xl border border-ivory-line bg-ivory-card p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">

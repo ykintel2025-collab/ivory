@@ -73,6 +73,17 @@ export const EN: Record<string, string> = {
   "Kon niet starten.": "Could not start.",
   "Fout bij aanmaken verificatie.": "Error while creating verification.",
   "Niet ingelogd.": "Not logged in.",
+  "Tweestapsverificatie": "Two-factor authentication",
+  "Aan": "On",
+  "Uit": "Off",
+  "Verplicht voor iedereen: inloggen vraagt om een code uit de authenticator-app.":
+    "Required for everyone: logging in asks for a code from the authenticator app.",
+  "Tijdelijk UIT: iedereen kan inloggen met alleen een wachtwoord. Zet dit zo snel mogelijk weer aan.":
+    "Temporarily OFF: everyone can log in with just a password. Turn it back on as soon as possible.",
+  "Tweestapsverificatie uitzetten? Iedereen kan dan inloggen met alleen een wachtwoord. Zet het zo snel mogelijk weer aan.":
+    "Turn off two-factor authentication? Everyone can then log in with just a password. Turn it back on as soon as possible.",
+  "Tweestapsverificatie weer verplicht maken? Wie nog geen authenticator heeft, moet die bij de volgende klik instellen.":
+    "Make two-factor authentication required again? Anyone without an authenticator will have to set one up on their next click.",
 
   // ===== Dashboard (alle projecten) =====
   "Overzicht over al je projecten heen": "Overview across all your projects",
